@@ -1,0 +1,126 @@
+---
+title: "Keyword Spotting: Wake Word Detection and Routing"
+sidebarTitle: "KWS"
+description: "Keyword Spotting (KWS) in Lab Console detects a configured wake word in the audio stream and routes subsequent speech to the Voice Interaction Agent."
+---
+
+Keyword Spotting (KWS) is the always-on, passive listening layer that gates access to the Voice Interaction Agent. Rather than sending a continuous audio stream to the cloud, KWS monitors audio locally, waits for a specific wake word, and then — and only then — triggers the pipeline that routes speech through Speech Enhancement and on to the Voice Interaction Agent. This makes interactions intentional, conserves bandwidth, and keeps unrelated ambient audio out of the voice pipeline entirely.
+
+## What Is Keyword Spotting?
+
+Keyword spotting is a lightweight speech-processing technique purpose-built for one job: detecting a single pre-defined word or short phrase in a continuous audio stream with very low computational overhead. It is not a full speech recognizer — it does not transcribe or understand arbitrary speech. It listens for one specific acoustic pattern (the wake word) and fires a binary signal when that pattern is detected above a confidence threshold.
+
+In Lab Console, KWS serves as the trigger mechanism for the entire voice interaction pipeline. No audio reaches the Voice Interaction Agent until KWS confirms the wake word has been spoken.
+
+<Note>
+  KWS runs **entirely on the client side** — within your Lab Console session in the browser or client application — before any audio is forwarded to the SoundAdam Gateway. This means wake word detection adds no network round-trip latency and no ambient audio is transmitted to SoundAdam infrastructure unless a wake word is detected.
+</Note>
+
+## The Wake + Route Pattern
+
+The core KWS behavior in Lab Console follows a **wake + route** pattern:
+
+<Steps>
+  <Step title="Passive Listening">
+    KWS continuously monitors the local audio stream from your microphone. The audio is processed in small frames (typically 10–30ms) by a lightweight on-device model. No audio is sent to the gateway during this phase.
+  </Step>
+  <Step title="Wake Word Detection">
+    When the KWS model detects the configured wake word with confidence above the sensitivity threshold, it fires a detection event. The exact moment of detection is timestamped locally.
+  </Step>
+  <Step title="Pipeline Activation">
+    The detection event triggers the gateway routing flow. The audio stream starting from just before the detection timestamp (a short pre-roll buffer is captured to avoid clipping the first phoneme of the user's utterance) is prepared for forwarding.
+  </Step>
+  <Step title="Routing to Voice Agent">
+    The audio stream is passed through Speech Enhancement and then forwarded to the SoundAdam Gateway, which routes it to the Voice Interaction Agent under the current session context.
+  </Step>
+  <Step title="Agent Response">
+    The Voice Interaction Agent processes the utterance and returns a response. The full-duplex channel is now active.
+  </Step>
+  <Step title="Return to Passive Listening">
+    After the interaction ends (either through a detected end-of-utterance, a silence timeout, or an explicit session close), KWS returns to passive listening mode.
+  </Step>
+</Steps>
+
+## KWS in the Voice Pipeline
+
+KWS is the first active stage in the Lab Console voice pipeline. Its position is intentional: by running before Speech Enhancement and the gateway, it ensures that enhancement and network resources are only engaged when a real interaction is beginning.
+
+```
+Microphone (continuous audio)
+        │
+        ▼
+┌───────────────────┐
+│  KWS Engine       │  ← client-side, always-on, no network
+│  (passive listen) │
+└────────┬──────────┘
+         │  wake word detected
+         ▼
+┌───────────────────┐
+│ Speech Enhancement│  ← streaming, real-time
+└────────┬──────────┘
+         │  clean audio stream
+         ▼
+┌───────────────────┐
+│    Gateway        │  ← context resolution + routing
+└────────┬──────────┘
+         │
+         ▼
+┌───────────────────┐
+│ Voice Interaction │  ← full-duplex agent response
+│     Agent         │
+└───────────────────┘
+```
+
+Because KWS runs before Speech Enhancement, it operates on the raw microphone signal. This is by design: the KWS model is trained on real-world audio conditions including moderate background noise, so it can detect the wake word robustly even before enhancement is applied.
+
+## Sensitivity and Accuracy Considerations
+
+KWS detection involves a trade-off between two competing error types:
+
+| Error Type | Description | Impact |
+|---|---|---|
+| **False negative** | Wake word spoken but not detected | Interaction does not start; user must repeat the wake word |
+| **False positive** | Wake word not spoken but detection fires | Ambient speech or similar-sounding words accidentally trigger the pipeline |
+
+Sensitivity settings in Lab Console control where this trade-off sits:
+
+- **Higher sensitivity** → fewer false negatives, more false positives. Recommended for quiet lab environments where accidental triggers are unlikely.
+- **Lower sensitivity** → fewer false positives, more false negatives. Recommended for noisy environments or shared spaces where background speech might resemble the wake word.
+
+Additional factors that affect KWS accuracy:
+
+- **Microphone quality** — higher-quality inputs with flatter frequency response improve detection consistency
+- **Wake word pronunciation** — speaking the wake word clearly and at a normal pace improves accuracy over rushed or slurred delivery
+- **Ambient noise level** — Speech Enhancement helps the downstream pipeline but does not affect KWS, which runs on raw audio; very high noise levels can reduce KWS confidence
+- **Distance from microphone** — KWS accuracy degrades at greater distances; for reliable detection, speak within 1–2 meters of your input device
+
+## Stage-by-Stage Reference
+
+The following table describes what happens at each stage of the KWS lifecycle:
+
+| Stage | What Happens | Where It Runs | Audio Forwarded? |
+|---|---|---|---|
+| **Listening** | KWS model analyzes audio frames for wake word acoustic pattern | Client (local) | No |
+| **Detection** | Confidence threshold exceeded; detection event fired with timestamp | Client (local) | No |
+| **Pre-roll capture** | Short audio buffer before detection timestamp is preserved to avoid clipping | Client (local) | No |
+| **Enhancement handoff** | Audio stream (including pre-roll) passed to Speech Enhancement pipeline | Client → gateway | Yes, from this point |
+| **Routing** | Gateway receives enhanced audio, resolves session context, routes to agent | Gateway | Yes |
+| **Agent response** | Voice Interaction Agent processes utterance, returns response on duplex channel | Gateway → agent | Yes (bidirectional) |
+| **Reset** | End-of-utterance or timeout detected; KWS returns to passive listening | Client (local) | No |
+
+## Related Concepts
+
+<CardGroup cols={2}>
+  <Card title="Voice Interaction Agent" icon="microphone" href="/concepts/voice-interaction">
+    Learn about the full-duplex agent that KWS routes audio to after wake word detection.
+  </Card>
+  <Card title="Speech Enhancement" icon="waveform" href="/concepts/speech-enhancement">
+    See how audio is cleaned and enhanced immediately after KWS triggers the pipeline.
+  </Card>
+  <Card title="Gateway" icon="route" href="/concepts/gateway">
+    Understand how the gateway receives the routed stream from KWS and manages session context.
+  </Card>
+  <Card title="Personal Access" icon="user" href="/access/personal">
+    Configure personal-scoped sessions for individual KWS experiments.
+  </Card>
+</CardGroup>

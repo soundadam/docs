@@ -1,0 +1,112 @@
+---
+title: "Lab Console Interface Overview"
+sidebarTitle: "Overview"
+description: "A guided tour of the SoundAdam Lab Console interface — panels, controls, view modes, and how to navigate your voice experiment workspace."
+---
+
+The SoundAdam Lab Console is your primary entry point for gateway context, service access, and real-time voice experiments. Accessed at [soundadam.com](https://soundadam.com), the console provides a unified workspace for running duplex voice interactions, keyword spotting (KWS) experiments, and speech enhancement sessions — all within a single, configurable interface.
+
+## Interface Layout
+
+The Lab Console is organized into three primary panels:
+
+<CardGroup cols={3}>
+  <Card title="Console" icon="terminal">
+    The main experiment workspace. Displays the active session, time-coded session timer, streaming status, and live voice interaction controls.
+  </Card>
+  <Card title="Gateway" icon="server">
+    Manages gateway context — your connection scope (personal or group), routing configuration, and service availability indicators.
+  </Card>
+  <Card title="Control" icon="sliders">
+    Houses per-session configuration options including speech enhancement toggles, motion settings, display preferences, and KWS wake-word configuration.
+  </Card>
+</CardGroup>
+
+---
+
+## View Modes
+
+The Lab Console supports two layout orientations to suit different monitor configurations and workflow preferences.
+
+<Tabs>
+  <Tab title="Horizontal">
+    Panels are arranged side-by-side along the horizontal axis. This layout is ideal for wide-format displays and multi-panel monitoring workflows where you want the Console, Gateway, and Control visible simultaneously.
+  </Tab>
+  <Tab title="Diagonal">
+    Panels are arranged in a diagonal cascade. This layout is well-suited for focused sessions where one panel is primary and the others are accessible at a glance without occupying equal screen real estate.
+  </Tab>
+</Tabs>
+
+To switch between view modes, use the **View** selector in the top navigation bar of the console.
+
+---
+
+## Display Options
+
+The console offers two display modes that control how the interface occupies your screen:
+
+<ParamField path="Sticky" type="display option">
+  The console remains anchored within the browser viewport as you scroll. Use sticky mode when you need to reference other browser content alongside your experiment workspace.
+</ParamField>
+
+<ParamField path="Fullscreen" type="display option">
+  The console expands to occupy the entire browser viewport, hiding all surrounding browser chrome. Recommended for immersive, distraction-free experiment sessions.
+</ParamField>
+
+<Tip>
+  Use **Fullscreen** mode when running focused voice experiments. Eliminating visual distractions reduces accidental panel switches and keeps latency metrics front-and-center during active sessions.
+</Tip>
+
+---
+
+## Motion Settings
+
+The Lab Console respects both system-level and user-overridden motion preferences, ensuring accessibility for users sensitive to UI animation.
+
+| Setting | Behavior |
+|---|---|
+| **System** | Inherits the motion preference from your operating system (`prefers-reduced-motion`). Animations play normally if no OS-level reduction is set. |
+| **Force Reduce** | Overrides the system setting and disables all non-essential UI animations within the console, regardless of OS configuration. |
+
+Motion settings are available in the **Control** panel under **Accessibility**.
+
+---
+
+## Session Timer
+
+Every active voice session in the Lab Console is **time-coded**. A session timer displayed in the Console panel (e.g., `00:21`) tracks elapsed time from session start. This timestamp is embedded in runbook log entries, allowing you to correlate voice events, KWS detections, and agent responses to precise moments in the session.
+
+The timer resets when a session ends and a new session is initiated.
+
+---
+
+## Navigating the Panels
+
+Switching between the Console, Gateway, and Control panels is done via the **tab bar** at the top of the Lab Console workspace:
+
+1. Click **Console** to return to the active experiment view at any time.
+2. Click **Gateway** to inspect or change your gateway context (personal or group scope) and review service connection status.
+3. Click **Control** to adjust session settings — speech enhancement, KWS configuration, view mode, display, and motion preferences.
+
+<Info>
+  Panel navigation is non-destructive. Switching to Gateway or Control during an active session does not interrupt streaming or pause the session timer. Return to Console at any time to resume monitoring.
+</Info>
+
+---
+
+## Explore Further
+
+<CardGroup cols={2}>
+  <Card title="Voice Experiments" icon="microphone" href="/console/voice-experiments">
+    Learn how to configure, start, and monitor real-time duplex voice experiments using the Voice Interaction Agent and KWS.
+  </Card>
+  <Card title="Streaming" icon="wave-square" href="/console/streaming">
+    Understand the real-time audio streaming pipeline, stream health indicators, and latency expectations.
+  </Card>
+  <Card title="Runbook" icon="book-open" href="/console/runbook">
+    Use the structured experiment log to review session events, routing decisions, and voice interaction outcomes.
+  </Card>
+  <Card title="Gateway Concepts" icon="network-wired" href="/concepts/gateway">
+    Understand gateway context, personal vs. group scope, and how routing decisions are made.
+  </Card>
+</CardGroup>

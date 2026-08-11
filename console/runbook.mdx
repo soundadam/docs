@@ -1,0 +1,144 @@
+---
+title: "Using the Lab Console Runbook"
+sidebarTitle: "Runbook"
+description: "The Lab Console Runbook is a structured experiment log that records session events, routing decisions, and voice interaction outcomes for review and analysis."
+---
+
+The **Runbook** is the Lab Console's structured experiment log — a time-coded, persistent record of everything that happens within a voice session. Every session you run generates a runbook entry: from the moment the session starts to its final close, the runbook captures KWS wake events, routing decisions, agent responses, latency metrics, and session boundaries with millisecond-precise timestamps. Think of it as the authoritative workflow record for your research: where raw voice experiments become structured, reviewable data.
+
+Runbooks support both **personal** and **group-scoped** sessions. In group sessions, the runbook aggregates entries from all participants sharing the gateway context, enabling cross-participant correlation and collaborative experiment analysis.
+
+---
+
+## What Gets Recorded
+
+The runbook automatically captures the following event categories during every voice session:
+
+<AccordionGroup>
+  <Accordion title="Session Start / End">
+    The precise time at which a session was initiated and terminated, along with session metadata: gateway context (personal or group), session scope, and the Lab Console version in use. These bookend entries define the boundaries of each runbook record.
+  </Accordion>
+
+  <Accordion title="KWS Wake Events">
+    Every keyword spotting detection is logged as a **wake event**, including:
+    - The session timestamp at detection (e.g., `00:21`)
+    - The detected wake word
+    - KWS confidence score (where available)
+    - Whether the event triggered a gateway routing action
+  </Accordion>
+
+  <Accordion title="Routing Decisions">
+    Each time the gateway evaluates a routing action — whether to forward a stream to the Voice Interaction Agent, hold, or reject — the decision is logged with:
+    - The triggering event (KWS detection or manual activation)
+    - The selected routing target
+    - Gateway context at time of decision (personal or group scope)
+  </Accordion>
+
+  <Accordion title="Latency Metrics">
+    Per-event and per-turn round-trip latency measurements are captured throughout the session. These entries allow you to identify latency spikes, compare p50 values across sessions, and assess the impact of network or hardware conditions on the ~47ms baseline.
+  </Accordion>
+
+  <Accordion title="Agent Responses">
+    Each turn in the Voice Interaction Agent duplex session is recorded, including:
+    - Session timestamp of the agent response
+    - Response duration
+    - Any routing or gateway events associated with the turn
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Accessing the Runbook
+
+The Runbook is accessible directly from within the Lab Console:
+
+<Steps>
+  <Step title="Open the Console Panel">
+    Navigate to [soundadam.com](https://soundadam.com) and sign in. From the Lab Console workspace, click the **Console** tab.
+  </Step>
+
+  <Step title="Locate the Runbook Section">
+    Within the Console panel, scroll to or click the **Runbook** section header. The runbook displays the most recent session log by default, with older sessions accessible via the session selector dropdown.
+  </Step>
+
+  <Step title="Select a Session">
+    Use the **session selector** to navigate between past runbook records. Sessions are listed by date, start time, and scope (personal or group). Click a session to load its full entry log.
+  </Step>
+
+  <Step title="Review the Event Timeline">
+    The selected session's runbook displays a chronological event timeline — each entry shows a session timestamp, event type, and relevant metadata. Entries are color-coded by category (session boundaries, KWS events, routing decisions, latency, and agent responses) for quick visual scanning.
+  </Step>
+</Steps>
+
+---
+
+## Analyzing Experiment Data
+
+The runbook is designed to support systematic experiment analysis. Common analytical workflows include:
+
+### Latency Analysis
+
+Filter runbook entries by the **Latency** category to extract all round-trip measurements from a session. Compare values against the ~47ms p50 baseline to identify anomalies. Sustained latency above 100ms during a session is worth correlating with network or system events logged in the same timeframe.
+
+### KWS Performance Review
+
+Review **wake event** entries to assess KWS detection accuracy. For each wake event, note:
+- Whether the detection was intentional (true positive) or spurious (false positive)
+- The confidence score at detection
+- The time elapsed between wake event and successful gateway routing
+
+This data informs wake-word configuration tuning and threshold adjustments for future experiments.
+
+### Agent Interaction Review
+
+Pair **agent response** entries with their preceding KWS wake events to reconstruct the full arc of each interaction turn. Session timestamps allow you to calculate per-turn response times and identify turns where latency or routing decisions deviated from expected behavior.
+
+---
+
+## Filtering and Searching Runbook Entries
+
+The runbook provides filtering and search tools to narrow large session logs to relevant entries:
+
+| Filter / Tool | Description |
+|---|---|
+| **Event Type Filter** | Show only entries of a specific category: Session, KWS, Routing, Latency, or Agent. |
+| **Timestamp Range** | Restrict the view to entries within a specific time window of the session (e.g., `00:10`–`00:45`). |
+| **Keyword Search** | Full-text search across runbook entry metadata — useful for locating specific routing targets, wake words, or error messages. |
+| **Scope Filter** | In group-scoped sessions, filter entries by individual participant to isolate a single member's event stream within the shared log. |
+
+Filters are composable — you can combine event type, timestamp range, and keyword search simultaneously to isolate precise subsets of a session log.
+
+---
+
+## Session Scope and Runbook Visibility
+
+<Note>
+  Runbook entries are **session-scoped**: personal session runbooks are visible only to you, while group-scoped session runbooks are visible to all members of the research group that shared the gateway context during that session. Group runbook entries from other participants are read-only for non-initiating members.
+</Note>
+
+---
+
+## Collaborative Analysis with Group Runbooks
+
+<Tip>
+  After a **group-scoped session**, open the shared runbook and use the **Scope Filter** to view all participants' event streams side by side. Correlating KWS wake events and agent response entries across participants by session timestamp can reveal synchronization patterns, competing wake activations, or latency differences between participants on the same gateway context — insights that are only visible in the aggregated group runbook.
+</Tip>
+
+---
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Voice Experiments" icon="microphone" href="/console/voice-experiments">
+    Learn how sessions are initiated, logged, and reviewed — the source of all runbook data.
+  </Card>
+  <Card title="Streaming" icon="wave-square" href="/console/streaming">
+    Understand how real-time streaming events and latency metrics are generated during sessions.
+  </Card>
+  <Card title="Console Overview" icon="layout-dashboard" href="/console/overview">
+    A guided tour of all Lab Console panels, including where the Runbook lives in the UI.
+  </Card>
+  <Card title="Gateway Concepts" icon="network-wired" href="/concepts/gateway">
+    Learn how gateway routing decisions — a key runbook event type — are made.
+  </Card>
+</CardGroup>

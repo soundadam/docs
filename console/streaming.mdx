@@ -1,0 +1,156 @@
+---
+title: "Real-Time Audio Streaming in Lab Console"
+sidebarTitle: "Streaming"
+description: "Understand how real-time audio streaming works in the Lab Console, including stream setup, speech enhancement processing, and monitoring stream health."
+---
+
+**Real-time audio streaming** in the Lab Console refers to the continuous, low-latency transmission of audio from your microphone through the SoundAdam voice pipeline — processed, routed, and returned as agent output — without buffering or batch delays. Unlike offline or batch audio processing, streaming maintains a live, open channel between your device and the gateway for the full duration of a voice session. This architecture is what enables the duplex Voice Interaction Agent and real-time KWS detection that define the Lab Console experience.
+
+---
+
+## The Streaming Pipeline
+
+Every voice session in the Lab Console follows a defined sequence of real-time processing stages:
+
+```
+Microphone Input
+      ↓
+Speech Enhancement (noise suppression, signal conditioning)
+      ↓
+Keyword Spotting (KWS) — wake word detection & routing trigger
+      ↓
+Gateway (context routing — personal or group scope)
+      ↓
+Voice Interaction Agent (duplex response generation)
+      ↓
+Audio Output (speaker / headphones)
+```
+
+<Steps>
+  <Step title="Microphone Input">
+    Raw audio is captured from your device's microphone and fed into the stream as a continuous audio buffer. Sample rate and bit depth are managed automatically by the Lab Console.
+  </Step>
+
+  <Step title="Speech Enhancement">
+    Before any further processing, the audio stream passes through the **speech enhancement** module. This stage applies real-time noise suppression and signal conditioning to improve clarity for downstream KWS and agent processing. Enhancement runs in streaming mode — it does not introduce buffering delays.
+  </Step>
+
+  <Step title="Keyword Spotting (KWS)">
+    The enhanced audio is continuously analyzed by the **KWS engine** for the configured wake word. The KWS stage acts as a gating layer: audio passes through to the gateway only after a wake event is detected, conserving gateway resources during idle listening.
+  </Step>
+
+  <Step title="Gateway Routing">
+    Upon KWS activation, the stream is handed off to the **gateway**, which applies your session's context (personal or group scope) to determine routing. The gateway forwards the audio to the appropriate Voice Interaction Agent instance.
+  </Step>
+
+  <Step title="Voice Interaction Agent">
+    The **Voice Interaction Agent** processes the incoming audio in duplex mode — it can receive and respond simultaneously, without waiting for you to finish speaking. Responses are streamed back through the gateway to your output device in real time.
+  </Step>
+</Steps>
+
+---
+
+## Stream Health Indicators
+
+The Lab Console's **Console panel** displays live stream health metrics during an active session. These indicators help you identify degraded streaming conditions before they affect experiment quality.
+
+| Indicator | Description |
+|---|---|
+| **Latency** | Current round-trip time from microphone input to agent output, displayed in milliseconds. |
+| **Signal Level** | Real-time visualization of microphone input amplitude. A flat or silent signal may indicate a microphone issue. |
+| **Enhancement Status** | Confirms whether speech enhancement is actively processing the stream. |
+| **KWS State** | Displays whether the KWS engine is in **listening**, **detected**, or **inactive** state. |
+| **Gateway Connection** | Indicates whether the gateway channel is open, pending, or disconnected. |
+
+If the gateway connection indicator shows a disruption mid-session, the Lab Console will attempt to re-establish the stream automatically. A reconnection event is logged in the runbook with its session timestamp.
+
+---
+
+## Latency Expectations
+
+SoundAdam's streaming infrastructure is optimized for real-time voice interaction research. Under normal network conditions:
+
+<CardGroup cols={2}>
+  <Card title="Round-Trip Latency (p50)" icon="gauge-high">
+    **~47ms** from microphone input to agent audio output at the 50th percentile. This figure encompasses the full pipeline: enhancement, KWS, gateway routing, and agent response.
+  </Card>
+  <Card title="Speech Enhancement Overhead" icon="waveform">
+    Enhancement processing is designed to add **negligible latency** above the ~47ms baseline. It runs as a streaming pass, not a buffered transform.
+  </Card>
+</CardGroup>
+
+Latency at or near 47ms p50 represents nominal operating conditions. Values consistently above 100ms may indicate:
+
+- Network congestion between your device and the SoundAdam gateway
+- High CPU load affecting local speech enhancement processing
+- Microphone driver buffering issues on your device
+
+---
+
+## Streaming vs. Batch Audio Processing
+
+The Lab Console is designed exclusively for **real-time streaming** sessions. It is important to understand how this differs from batch audio processing workflows:
+
+| Dimension | Real-Time Streaming | Batch Processing |
+|---|---|---|
+| **Latency** | ~47ms p50 round-trip | Seconds to minutes (post-processing) |
+| **Input** | Continuous live microphone capture | Pre-recorded audio files |
+| **KWS** | Live wake-word detection | Offline keyword search |
+| **Agent Interaction** | Full duplex, real-time | Non-interactive or asynchronous |
+| **Session Logging** | Time-coded runbook entries during session | Post-hoc log generation |
+| **Use Case** | Voice experiments, interaction research | Audio corpus analysis, model evaluation |
+
+The Lab Console does not currently support batch audio file upload for processing. All pipeline stages — enhancement, KWS, gateway routing, and agent interaction — operate on live microphone streams only.
+
+---
+
+## Tips for Optimal Streaming
+
+<AccordionGroup>
+  <Accordion title="Use a wired or high-quality USB microphone">
+    Built-in laptop microphones introduce more background noise and higher driver-level latency than dedicated USB or XLR microphones. A higher-quality input reduces the workload on speech enhancement and improves KWS accuracy.
+  </Accordion>
+
+  <Accordion title="Use a stable, low-latency network connection">
+    A wired Ethernet connection is strongly preferred over Wi-Fi for voice experiment sessions. If using Wi-Fi, ensure you are on a 5 GHz band with strong signal strength to minimize packet loss and jitter that could inflate round-trip latency above the ~47ms baseline.
+  </Accordion>
+
+  <Accordion title="Close background applications before starting a session">
+    CPU-intensive background processes can delay local speech enhancement processing and affect stream continuity. Close unnecessary applications — especially video conferencing tools, which may compete for microphone access.
+  </Accordion>
+
+  <Accordion title="Use headphones to prevent echo feedback">
+    Playing agent audio responses through speakers while your microphone is open can cause acoustic echo, which degrades KWS detection and agent input quality. Use headphones or earbuds during duplex sessions.
+  </Accordion>
+
+  <Accordion title="Verify microphone permissions before the session">
+    The Lab Console requires browser-level microphone permission. Confirm that your browser has granted microphone access to `soundadam.com` before starting a session to avoid stream initialization failures.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Group-Scoped Streaming Sessions
+
+<Tip>
+  Use **group-scoped sessions** for collaborative streaming experiments where multiple participants interact with the same gateway context. Group scope allows all participants' streams to be routed through a shared gateway instance, making it ideal for multi-participant voice studies, comparative KWS experiments, and joint agent interaction research. Review the shared runbook after the session to correlate each participant's stream events by timestamp.
+</Tip>
+
+---
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Voice Experiments" icon="microphone" href="/console/voice-experiments">
+    Step-by-step guide to configuring and running a full voice experiment session.
+  </Card>
+  <Card title="Runbook" icon="book-open" href="/console/runbook">
+    Review stream health events, latency metrics, and KWS detections in the session log.
+  </Card>
+  <Card title="Console Overview" icon="layout-dashboard" href="/console/overview">
+    Learn about the Console, Gateway, and Control panels and view mode options.
+  </Card>
+  <Card title="Gateway Concepts" icon="network-wired" href="/concepts/gateway">
+    Understand personal and group gateway context and how routing decisions are applied.
+  </Card>
+</CardGroup>

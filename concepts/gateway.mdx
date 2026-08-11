@@ -1,0 +1,116 @@
+---
+title: "What Is the SoundAdam Gateway?"
+sidebarTitle: "Gateway"
+description: "The SoundAdam Gateway manages service routing, context propagation, and access control for all Lab Console sessions and voice experiments."
+---
+
+The SoundAdam Gateway is the central control plane for every session you run in [Lab Console](https://soundadam.com). Before any audio reaches a voice agent or experiment service, it passes through the gateway — which resolves routing, attaches context, and enforces access scope. Think of it as the intelligent front door that decides where your request goes, what it knows about you, and who is allowed to share that session.
+
+## What the Gateway Does
+
+The gateway performs three interconnected functions on every request:
+
+<CardGroup cols={3}>
+  <Card title="Service Routing" icon="route">
+    Directs incoming requests to the correct downstream service — Voice Interaction Agent, KWS pipeline, Speech Enhancement, or a combination — based on session configuration and active experiment parameters.
+  </Card>
+  <Card title="Context Propagation" icon="arrow-right-arrow-left">
+    Attaches and maintains session context (experiment ID, user profile, group membership, active model config) so every service in the chain receives consistent, enriched metadata without you having to re-supply it.
+  </Card>
+  <Card title="Access Control" icon="lock">
+    Enforces personal or group-scoped access policies, ensuring that only authorized principals can initiate, observe, or share a session.
+  </Card>
+</CardGroup>
+
+## Gateway Context
+
+**Gateway context** is the bundle of metadata the gateway resolves and forwards alongside your audio stream or API request. It includes:
+
+- **Session identity** — a unique session token tied to your authenticated Lab Console login
+- **Experiment parameters** — model versions, pipeline flags, and feature toggles active for the current run
+- **Access scope** — whether the session is personal or shared with a research group
+- **Routing hints** — which services are enabled (e.g., KWS → Speech Enhancement → Voice Agent)
+
+Context matters because voice experiments are stateful. A duplex voice session that spans multiple turns needs each turn to carry the same experiment configuration. If context drifts between hops — say, a different model version is resolved mid-session — results become inconsistent and unreproducible. The gateway pins context at session initialization and propagates it to every downstream service for the lifetime of the session.
+
+<Note>
+  Gateway context is resolved once at session start and remains immutable for the duration of that session. If you change experiment parameters, you must start a new session to pick up the updated context.
+</Note>
+
+## Personal vs. Group-Scoped Access
+
+Lab Console supports two access scopes, both managed through the gateway:
+
+| Scope | Who can access the session | Context sharing |
+|---|---|---|
+| **Personal** | You only | Context is private to your account |
+| **Group** | All members of your research group | Context and session state are shared across group members |
+
+- For details on configuring personal access, see [Personal Access](/access/personal).
+- For details on setting up and managing group-scoped access, see [Group-Scoped Access](/access/group-scoped).
+
+<Note>
+  In group-scoped sessions, all members share the same gateway context — including experiment parameters and routing configuration. Changes made by one group member (such as adjusting a pipeline flag) are visible to all participants in that session.
+</Note>
+
+## How Sessions Flow Through the Gateway
+
+Every Lab Console session follows the same gateway-mediated path, from the moment you open a connection to the final response delivered to your audio output or API client.
+
+<Steps>
+  <Step title="Authentication & Session Init">
+    Your Lab Console client authenticates with the gateway using your account credentials. The gateway issues a session token and resolves your access scope (personal or group).
+  </Step>
+  <Step title="Context Resolution">
+    The gateway reads your active experiment configuration — model versions, pipeline flags, enabled features — and assembles the gateway context bundle that will travel with every request in this session.
+  </Step>
+  <Step title="Routing Decision">
+    Based on context and the incoming request type (voice stream, KWS trigger, API call), the gateway selects the appropriate downstream service path and opens a routed connection.
+  </Step>
+  <Step title="Service Execution">
+    The request (with attached context) flows through the configured pipeline — for example: Speech Enhancement → KWS → Voice Interaction Agent — with each service reading from and writing back to the shared context.
+  </Step>
+  <Step title="Response Delivery">
+    The final response (audio output, transcript, or structured data) is returned through the gateway to your Lab Console client, completing the round trip.
+  </Step>
+</Steps>
+
+## Request Flow at a Glance
+
+```
+Your Client (Lab Console)
+        │
+        ▼
+  ┌─────────────┐
+  │   Gateway   │  ← resolves context, scope, routing
+  └──────┬──────┘
+         │
+    ┌────▼─────────────────────┐
+    │    Pipeline Services     │
+    │  Speech Enhancement      │
+    │  KWS (Wake Word)         │
+    │  Voice Interaction Agent │
+    └────────────┬─────────────┘
+                 │
+                 ▼
+         Response to Client
+```
+
+The gateway remains in the loop for the full session — it does not hand off and exit. This persistent presence is what allows it to enforce context immutability, re-route if a service becomes unavailable, and apply access policies consistently across every turn in a multi-turn voice conversation.
+
+## Related Concepts
+
+<CardGroup cols={2}>
+  <Card title="Voice Interaction Agent" icon="microphone" href="/concepts/voice-interaction">
+    Learn how the duplex voice agent receives and responds to routed audio from the gateway.
+  </Card>
+  <Card title="Keyword Spotting (KWS)" icon="ear" href="/concepts/kws">
+    See how wake word detection integrates with gateway routing to trigger the voice pipeline.
+  </Card>
+  <Card title="Speech Enhancement" icon="waveform" href="/concepts/speech-enhancement">
+    Understand how streaming audio processing fits into the gateway-managed pipeline.
+  </Card>
+  <Card title="Personal Access" icon="user" href="/access/personal">
+    Configure personal-scoped gateway access for individual experiments.
+  </Card>
+</CardGroup>

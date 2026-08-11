@@ -1,0 +1,190 @@
+---
+title: "Lab Console FAQ and Troubleshooting Guide"
+sidebarTitle: "FAQ"
+description: "Answers to common questions about the SoundAdam Lab Console, including access issues, latency, KWS behavior, speech enhancement, and session troubleshooting."
+---
+
+# Lab Console FAQ & Troubleshooting
+
+Find answers to the most common questions about using the [SoundAdam Lab Console](https://soundadam.com). If your question isn't covered here, contact your research group admin or console lead.
+
+---
+
+<AccordionGroup>
+
+  <Accordion title="How do I get access to the Lab Console?">
+    Access to the Lab Console is **authorized** — it is not open for self-registration. Access is granted on either a personal or group-scoped basis by your research group lead or a console administrator.
+
+    To request access:
+    1. Contact your group lead or research admin and ask them to initiate an authorization request.
+    2. You will receive an invitation link or credentials tied to your institutional or personal identity.
+    3. Once authorized, you can log in at [https://soundadam.com](https://soundadam.com).
+
+    For a full walkthrough of the authorization process, see the [Access & Authorization](/access/authorization) guide.
+  </Accordion>
+
+  <Accordion title="What does 'group-scoped' mean for my session?">
+    **Group-scoped access** means your session shares a common gateway context with other authorized members of your research group. This has a few practical implications:
+
+    - **Shared resources**: Gateway routing and Voice Interaction Agent capacity are pooled across concurrent group sessions. High concurrency within your group may increase round-trip latency.
+    - **Shared context window**: Depending on your group's configuration, conversation history or experiment state may be visible across sessions within the group scope.
+    - **Coordinated routing**: KWS wake-word triggers and routing rules are applied consistently across all group members operating under the same scope.
+
+    If you need an isolated session — for example, for a latency-sensitive experiment or confidential data collection — consider switching to **personal-scoped access**. See [Personal vs. Group-Scoped Access](/access/group-scoped) for details.
+  </Accordion>
+
+  <Accordion title="My wake word isn't being detected — what should I do?">
+    Wake-word detection is handled by the **Keyword Spotting (KWS)** engine. If your wake word is not triggering correctly, work through the following checks:
+
+    <Steps>
+      <Step title="Check your microphone input">
+        Confirm that the Lab Console has permission to access your microphone and that the correct input device is selected. In your browser, look for the microphone permission icon in the address bar. In the console, verify the active input device under **Session Settings → Audio Input**.
+      </Step>
+      <Step title="Speak clearly and at a consistent volume">
+        The KWS engine is sensitive to pronunciation and volume consistency. Speak the wake word at a natural pace — neither too fast nor in an exaggerated way. Avoid whispering or speaking at an angle away from the microphone.
+      </Step>
+      <Step title="Reduce background noise">
+        High ambient noise can mask the wake word and cause the KWS engine to miss or misclassify it. Move to a quieter environment, use a directional microphone, or enable a higher speech enhancement profile.
+      </Step>
+      <Step title="Check that KWS is enabled for your session">
+        KWS may be disabled at the session or group level. Check your session configuration or ask your group admin to confirm the KWS routing rules are active.
+      </Step>
+      <Step title="Restart the audio session">
+        If the above steps don't resolve the issue, end and restart your session. Occasionally, a stale audio context in the browser can cause detection to fail silently.
+      </Step>
+    </Steps>
+
+    If the problem persists across multiple sessions and environments, contact your console lead with the session ID and a description of the issue.
+  </Accordion>
+
+  <Accordion title="Why is my voice latency higher than 47ms?">
+    The **47ms figure is the p50 (median) round-trip latency** — it represents typical performance under normal conditions, not a guaranteed ceiling. Latency above 47ms is expected in various situations:
+
+    | Cause | Effect |
+    |---|---|
+    | Poor or unstable network (Wi-Fi, VPN, congested link) | Increases gateway routing and return-path latency |
+    | High group-session concurrency | Increases agent processing and routing contention |
+    | Bluetooth or low-quality microphone | Adds capture delay and jitter at the source |
+    | Complex background noise | Increases speech enhancement processing time |
+
+    **To reduce latency:**
+    - Switch to a wired Ethernet connection.
+    - Use a wired USB or 3.5mm microphone instead of Bluetooth.
+    - Minimize background noise in your environment.
+    - Switch to personal-scoped access if your group has multiple concurrent sessions.
+    - Check the live latency indicator in the console header during your session.
+
+    For a full breakdown of latency components, see the [Latency Reference](/reference/latency).
+  </Accordion>
+
+  <Accordion title="Can I use the console without speech enhancement?">
+    **Speech enhancement is enabled by default** for all Lab Console sessions. It runs as a streaming process, applying noise suppression and signal normalization before audio reaches the KWS engine and Voice Interaction Agent.
+
+    In most cases, speech enhancement improves both wake-word detection accuracy and voice agent response quality, and we recommend leaving it on.
+
+    However, if your research requires unprocessed audio — for example, if you are benchmarking raw signal characteristics or studying noise artifacts — you can request that speech enhancement be disabled for your session or group scope. Contact your **research group admin or console lead** to configure this.
+
+    <Note>
+      Disabling speech enhancement may affect KWS detection reliability in noisy environments.
+    </Note>
+  </Accordion>
+
+  <Accordion title="What is a runbook and how do I access it?">
+    A **runbook** in the Lab Console is a structured, step-by-step operational guide for setting up, running, and tearing down a voice experiment or session workflow. Runbooks document the exact sequence of steps, configurations, and checkpoints needed to reproduce an experiment reliably.
+
+    Runbooks are particularly useful for:
+    - Onboarding new group members to a standardized session workflow.
+    - Documenting experiment configurations for reproducibility.
+    - Providing troubleshooting decision trees for common session issues.
+
+    To access the available runbooks for your group, see the [Lab Console Runbook](/console/runbook) page. If your group has custom runbooks, your admin can share them directly through the console interface.
+  </Accordion>
+
+  <Accordion title="How do I switch between personal and group-scoped access?">
+    Your session scope — **personal** or **group** — determines whether you have a private gateway context or share one with your research group.
+
+    - **Personal-scoped access** gives you an isolated session with dedicated routing, lower contention latency, and a private context window.
+    - **Group-scoped access** shares gateway context and resources with other authorized group members.
+
+    To switch scopes, you may need to log out and re-authenticate with different credentials, or your admin may be able to toggle your scope from the group management interface.
+
+    For step-by-step instructions, see [Personal vs. Group-Scoped Access](/access/group-scoped). If you need a scope change provisioned, contact your group lead.
+  </Accordion>
+
+  <Accordion title="I'm getting an authorization error — what should I do?">
+    Authorization errors indicate that the console could not verify your identity or permissions for the requested resource. Common causes include:
+
+    - **Expired or revoked credentials** — Your access token or invite link may have expired.
+    - **Incorrect account** — You may be logged in with a different account than the one that was authorized.
+    - **Session scope mismatch** — You may be attempting to access a group resource without group-scoped authorization.
+    - **Access not yet provisioned** — Your admin may not have completed the authorization process.
+
+    **Steps to resolve:**
+    1. Log out and log back in at [https://soundadam.com](https://soundadam.com).
+    2. Confirm you are using the correct account (institutional email vs. personal).
+    3. Review the [Access & Authorization](/access/authorization) guide to verify the expected authorization flow.
+    4. If the error persists, **contact your group lead** and provide the exact error message and the time it occurred. They can verify your authorization status from the group management panel.
+
+    <Warning>
+      Do not share your access credentials or tokens with other users. Authorization is personal or group-scoped by design, and credential sharing may result in access being revoked.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="What browsers and devices are supported?">
+    The SoundAdam Lab Console is a browser-based application. It is designed to work with **modern browsers that support microphone access via the Web Audio API**.
+
+    **Recommended:**
+    - Google Chrome (latest stable) on desktop — best overall compatibility and lowest audio latency
+    - Mozilla Firefox (latest stable) on desktop — fully supported
+
+    **Supported with caveats:**
+    - Microsoft Edge (Chromium-based) — supported, performance equivalent to Chrome
+    - Safari (macOS, latest) — supported, but microphone permission prompts behave differently; ensure microphone access is granted in System Preferences as well as the browser
+
+    **Not recommended:**
+    - Mobile browsers (iOS Safari, Android Chrome) — microphone access and WebSocket behavior vary; not validated for production use in the console
+    - Older browser versions — the console relies on modern Web Audio and WebSocket APIs that may not be available in browsers more than two major versions behind
+
+    **Device recommendations:**
+    - Desktop or laptop computers with a dedicated wired microphone
+    - Avoid relying on built-in microphones or Bluetooth headsets for latency-sensitive experiments
+
+    If you encounter browser-specific issues, try Chrome as a baseline before reporting a bug.
+  </Accordion>
+
+  <Accordion title="How do I report a bug or request a feature?">
+    Bug reports and feature requests help improve the Lab Console for all research groups.
+
+    **To report a bug:**
+    1. Note the **session ID** (visible in the console header or session info panel) and the exact time the issue occurred.
+    2. Capture any error messages, unexpected behavior descriptions, or screenshots.
+    3. Contact your **research group admin or console lead** and provide this information. They will escalate to the platform team with the appropriate context.
+
+    **To request a feature:**
+    1. Describe the use case and why existing functionality does not meet your needs.
+    2. Submit the request to your **research group admin or console lead**, who can aggregate feature requests across the group and submit them to the platform roadmap process.
+
+    <Tip>
+      When reporting a bug, the more context you can provide — browser version, operating system, session scope, steps to reproduce — the faster the issue can be triaged and resolved.
+    </Tip>
+  </Accordion>
+
+</AccordionGroup>
+
+---
+
+## Still need help?
+
+If your question isn't answered here, the following resources may help:
+
+<CardGroup cols={3}>
+  <Card title="Access & Authorization" icon="key" href="/access/authorization">
+    Understand how access is provisioned and managed for personal and group-scoped sessions.
+  </Card>
+  <Card title="Latency Reference" icon="gauge-high" href="/reference/latency">
+    Deep-dive into the 47ms p50 benchmark and how to optimize your session for low latency.
+  </Card>
+  <Card title="Console Runbook" icon="book-open" href="/console/runbook">
+    Step-by-step operational guides for setting up and running voice experiments.
+  </Card>
+</CardGroup>

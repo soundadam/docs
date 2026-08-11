@@ -1,0 +1,115 @@
+---
+title: "Speech Enhancement: Streaming Audio Processing"
+sidebarTitle: "Speech Enhancement"
+description: "Speech Enhancement in Lab Console applies real-time streaming audio processing to reduce noise and improve voice clarity before routing to the Voice Interaction Agent."
+---
+
+Speech Enhancement is the real-time audio processing layer that sits between microphone capture and the Voice Interaction Agent. It operates on a continuous stream of raw audio frames — reducing background noise, suppressing reverberation, and improving voice clarity — without introducing perceptible latency or interrupting the flow of a live conversation. The result is a cleaner signal for every downstream stage: KWS detection is more accurate, gateway routing carries higher-quality audio, and the Voice Interaction Agent receives speech that is easier to recognize and respond to correctly.
+
+<Note>
+  Speech Enhancement is **applied automatically** in all Lab Console sessions. You do not need to enable or configure it manually. Every audio stream routed through the gateway benefits from enhancement without any additional setup in your experiment configuration.
+</Note>
+
+## What Speech Enhancement Does
+
+The enhancement pipeline applies several complementary processing techniques in real time:
+
+<CardGroup cols={2}>
+  <Card title="Noise Reduction" icon="volume-xmark">
+    Suppresses stationary and non-stationary background noise — fan hum, HVAC, keyboard clicks, ambient conversation — without attenuating the target voice signal.
+  </Card>
+  <Card title="Voice Clarity Improvement" icon="waveform-lines">
+    Enhances the spectral characteristics of the speaker's voice, sharpening formant structure and reducing muddiness caused by room acoustics or low-quality microphones.
+  </Card>
+  <Card title="Reverberation Suppression" icon="arrows-to-dot">
+    Reduces the tail of room reflections (reverb) that smear phoneme boundaries and degrade recognition accuracy, particularly in hard-surfaced lab environments.
+  </Card>
+  <Card title="Level Normalization" icon="sliders">
+    Normalizes input levels across different microphones and speaking distances, so the voice signal arrives at consistent amplitude regardless of hardware variation.
+  </Card>
+</CardGroup>
+
+## Streaming Architecture: Low-Latency by Design
+
+Speech Enhancement in Lab Console is a **streaming pipeline** — it does not buffer a complete utterance before processing. Instead, it processes audio in small, overlapping frames (typically on the order of milliseconds) and emits enhanced frames continuously. This architecture has two important implications:
+
+1. **No utterance-level delay** — the enhanced audio stream flows to the gateway in near-real time, keeping pace with the speaker without a perceivable hold
+2. **Frame-level independence** — each frame is processed with minimal dependency on future frames, so the pipeline does not need to "look ahead" and introduce buffering latency
+
+This is what makes Speech Enhancement compatible with the ~47ms p50 round-trip latency target. The enhancement cost is measured in single-digit milliseconds per frame — well within the budget for a full-pipeline round trip.
+
+<Tip>
+  Speech Enhancement is specifically designed to stay within the latency budget that enables the **~47ms p50 round-trip** target. The processing overhead is accounted for in that figure — you are not trading voice clarity for latency; both are optimized together. If you observe higher-than-expected latency in your session, the cause is almost always network conditions or group-session concurrency, not Speech Enhancement processing time.
+</Tip>
+
+## Position in the Pipeline
+
+Speech Enhancement activates immediately after KWS detects the wake word and remains active for the duration of the routing window — from the first post-wake-word audio frame through to end-of-utterance detection.
+
+```
+Microphone (raw audio)
+        │
+        ▼
+┌───────────────┐
+│  KWS Engine   │  ← passive; wake word triggers next stage
+└───────┬───────┘
+        │  wake word detected
+        ▼
+┌──────────────────────┐
+│  Speech Enhancement  │  ← streaming, frame-by-frame
+│  • Noise reduction   │     active for full utterance duration
+│  • Clarity boost     │
+│  • Reverb suppression│
+│  • Level normalization│
+└──────────┬───────────┘
+           │  clean audio stream
+           ▼
+┌───────────────────┐
+│     Gateway       │  ← context + routing
+└──────────┬────────┘
+           │
+           ▼
+┌───────────────────┐
+│ Voice Interaction │  ← receives clean, enhanced audio
+│     Agent         │
+└───────────────────┘
+```
+
+Note that Speech Enhancement operates on the **post-KWS audio stream**, not on the passive listening input. KWS itself runs on the raw microphone signal and is trained to be robust to noisy conditions. Enhancement is applied to the audio that will actually travel over the network and be processed by the agent — the stage where signal quality has the greatest impact on outcome.
+
+## Benefits for Voice Experiments
+
+Speech Enhancement improves outcomes across every layer of the voice pipeline:
+
+| Pipeline Stage | How Enhancement Helps |
+|---|---|
+| **KWS Routing** | Cleaner audio reduces ambiguity in the transition window around the wake word, improving the accuracy of the audio that is captured and forwarded |
+| **Gateway Transmission** | A consistent, normalized signal is more compressible and less prone to artifacts introduced by network codecs |
+| **Voice Agent Recognition** | Reduced noise and improved clarity increase speech recognition accuracy, especially for technical vocabulary, proper nouns, and non-native speaker accents |
+| **Agent Response Quality** | When the agent understands the input correctly on the first attempt, responses are more accurate and conversations require fewer clarification turns |
+| **Experiment Reproducibility** | Normalized, cleaned audio reduces variability introduced by microphone hardware, room acoustics, and ambient noise — making experiment results more consistent across runs and participants |
+
+### KWS Accuracy Uplift
+
+Speech Enhancement indirectly improves KWS accuracy for the audio that is forwarded after detection. While KWS itself runs on raw audio, the pre-roll buffer (the short audio captured just before the wake word timestamp) passes through enhancement before reaching the gateway. A cleaner pre-roll reduces false context being sent to the agent at the start of each turn.
+
+### Agent Response Quality
+
+Voice models perform significantly better on clean, broadband speech. Background noise forces models to allocate probability mass across more phoneme candidates, increasing the chance of misrecognition. By delivering a clean signal, Speech Enhancement effectively narrows the recognition search space — which is especially valuable in research experiments that involve low-frequency technical terms, domain-specific jargon, or commands that are not well-represented in general speech corpora.
+
+## Related Concepts
+
+<CardGroup cols={2}>
+  <Card title="Voice Interaction Agent" icon="microphone" href="/concepts/voice-interaction">
+    Learn about the full-duplex agent that receives the enhanced audio stream for processing.
+  </Card>
+  <Card title="Keyword Spotting (KWS)" icon="ear" href="/concepts/kws">
+    Understand the wake word detection stage that triggers Speech Enhancement and pipeline routing.
+  </Card>
+  <Card title="Gateway" icon="route" href="/concepts/gateway">
+    See how the gateway receives and routes the enhanced audio stream with full session context.
+  </Card>
+  <Card title="Group-Scoped Access" icon="users" href="/access/group-scoped">
+    Configure shared research group sessions where Speech Enhancement benefits all participants.
+  </Card>
+</CardGroup>

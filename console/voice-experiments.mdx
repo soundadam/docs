@@ -1,0 +1,116 @@
+---
+title: "Running Voice Experiments in the Lab Console"
+sidebarTitle: "Voice Experiments"
+description: "Learn how to configure, start, and monitor real-time voice experiments in the Lab Console using the Voice Interaction Agent, KWS, and speech enhancement."
+---
+
+A **voice experiment** in the Lab Console is a structured, time-coded session in which you engage the full SoundAdam voice pipeline — from microphone input through speech enhancement and keyword spotting (KWS), into the gateway, and back through the Voice Interaction Agent in a real-time duplex exchange. Unlike simple audio playback or batch processing tasks, voice experiments are live, bidirectional, and logged: every wake event, routing decision, agent response, and latency measurement is captured in the runbook for post-session analysis. Experiments can be scoped to your personal gateway context or shared across a research group.
+
+<Warning>
+  You must have **authorized access** to the SoundAdam Lab Console before initiating any voice experiment. Personal experiments require individual credentials; group-scoped experiments require membership in a provisioned research group. Attempting to start a session without proper authorization will result in a gateway context error. Visit [soundadam.com](https://soundadam.com) to verify your access.
+</Warning>
+
+---
+
+## Running a Voice Experiment
+
+<Steps>
+  <Step title="Open the Console Panel">
+    Navigate to [soundadam.com](https://soundadam.com) and sign in. From the Lab Console workspace, click the **Console** tab in the top navigation bar to open the main experiment view. You will see the session timer (initialized at `00:00`), streaming status, and the voice interaction controls.
+  </Step>
+
+  <Step title="Select Your Gateway Context">
+    Click the **Gateway** tab to review your active gateway context. Choose between:
+
+    - **Personal** — your session is isolated to your own gateway context. Events, routing, and logs are private to your account.
+    - **Group** — your session shares gateway context with other members of your research group. Routing decisions and KWS events are visible across participants in the shared runbook.
+
+    Once selected, return to the **Console** tab to proceed.
+  </Step>
+
+  <Step title="Enable Speech Enhancement">
+    In the **Control** panel, confirm that **Speech Enhancement** is toggled **on** (it is enabled by default). Speech enhancement applies real-time noise suppression and signal conditioning to your microphone input before it reaches the KWS engine and the gateway.
+
+    <Info>
+      Speech enhancement is applied as a streaming process — it does not introduce noticeable latency above the baseline ~47ms round-trip. You may disable it for raw audio experiments, but it is recommended to keep it active for optimal KWS accuracy.
+    </Info>
+  </Step>
+
+  <Step title="Speak the Wake Word to Activate KWS">
+    With your session ready, speak the configured **wake word** clearly into your microphone. The Keyword Spotting (KWS) engine listens continuously in the background. Upon detection:
+
+    - The console registers a **wake event** in the runbook with the current session timestamp.
+    - The gateway context is activated and routes your audio stream to the Voice Interaction Agent.
+    - A visual indicator in the Console panel confirms KWS activation.
+
+    If the wake word is not detected, verify your microphone input level and that speech enhancement is enabled.
+  </Step>
+
+  <Step title="Interact with the Voice Agent (Duplex Session)">
+    Once the KWS wake event routes your session to the Voice Interaction Agent, you enter a **full-duplex voice interaction**. Speak naturally — the agent processes your input and responds in real time.
+
+    **Latency:** Active duplex sessions operate at approximately **~47ms p50 round-trip latency**, providing a near-instantaneous conversational experience. You can monitor real-time latency in the Console panel's stream health display.
+
+    The session timer increments continuously during the duplex session (e.g., `00:21`, `00:47`). All agent turns and routing events are logged to the runbook with their corresponding timestamps.
+  </Step>
+
+  <Step title="End the Session and Review Logs in the Runbook">
+    To end the session, click the **End Session** button in the Console panel. The session timer stops and the final session state is committed to the runbook.
+
+    Navigate to the **Runbook** (accessible from the Console panel or via the sidebar) to review the complete session log, including:
+
+    - Session start and end timestamps
+    - KWS wake event detections
+    - Routing decisions made by the gateway
+    - Per-turn latency metrics
+    - Voice agent responses and interaction outcomes
+
+    See [Using the Lab Console Runbook](/console/runbook) for detailed guidance on filtering and analyzing runbook entries.
+  </Step>
+</Steps>
+
+---
+
+## Latency During Active Sessions
+
+SoundAdam's voice pipeline is optimized for real-time interaction. During active duplex sessions, you can expect:
+
+| Metric | Value |
+|---|---|
+| Round-trip latency (p50) | ~47ms |
+| Pipeline | Mic → Enhancement → KWS → Gateway → Agent → Output |
+
+Latency is displayed live in the Console panel's stream health section. Significant deviations from the ~47ms baseline may indicate network congestion or microphone input issues — see [Real-Time Audio Streaming](/console/streaming) for troubleshooting guidance.
+
+---
+
+## Group-Scoped Experiments
+
+<Note>
+  When running a **group-scoped** experiment, your gateway context is shared with all active members of your research group. This means KWS detections, routing decisions, and agent interactions from any group member are visible in the shared runbook. Coordinate with your group before initiating sessions to avoid conflicting wake events or overlapping audio streams.
+</Note>
+
+Group-scoped experiments are particularly useful for:
+
+- Comparative listening studies across participants
+- Collaborative agent interaction research
+- Multi-participant KWS threshold calibration
+
+---
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Streaming" icon="wave-square" href="/console/streaming">
+    Learn about the real-time audio streaming pipeline and how to monitor stream health.
+  </Card>
+  <Card title="Runbook" icon="book-open" href="/console/runbook">
+    Review, filter, and analyze your session logs after each voice experiment.
+  </Card>
+  <Card title="Console Overview" icon="layout-dashboard" href="/console/overview">
+    A guided tour of all Lab Console panels, view modes, and display settings.
+  </Card>
+  <Card title="Gateway Concepts" icon="network-wired" href="/concepts/gateway">
+    Understand how gateway context routing works for personal and group sessions.
+  </Card>
+</CardGroup>

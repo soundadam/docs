@@ -1,0 +1,47 @@
+---
+title: "SoundAdam Lab Console: Real-Time Voice Research Platform"
+sidebarTitle: "Introduction"
+description: "SoundAdam Lab Console is an authorized research platform for real-time voice experiments, gateway access, and speech processing with ~47ms voice round-trip latency."
+---
+
+SoundAdam Lab Console is an authorized research service platform built for research groups and individual investigators who need low-latency, production-grade voice infrastructure without the overhead of building it themselves. The console serves as your primary entry point for gateway context management, real-time voice experiments, and access to a suite of speech processing services — including duplex voice interaction, keyword spotting, and streaming speech enhancement. Whether you are exploring novel voice interfaces, stress-testing wake-word pipelines, or integrating speech enhancement into a live research workflow, the Lab Console gives you a controlled, observable environment designed for serious experimental work.
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Request access, connect to the gateway, and run your first real-time voice experiment in minutes.
+  </Card>
+  <Card title="Gateway" icon="network-wired" href="/concepts/gateway">
+    Understand how the gateway controls service access, routing context, and session scoping.
+  </Card>
+  <Card title="Voice Interaction" icon="microphone" href="/concepts/voice-interaction">
+    Learn how the duplex Voice Interaction Agent handles full-duplex voice sessions end to end.
+  </Card>
+  <Card title="Console Overview" icon="display" href="/console/overview">
+    Explore the Lab Console interface, experiment controls, and observability tooling.
+  </Card>
+</CardGroup>
+
+## What You Can Do
+
+The Lab Console exposes four core capabilities, each available through the gateway once your access is authorized.
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Voice Experiments" icon="flask">
+    Spin up live voice sessions and observe round-trip performance in real time. The Lab Console targets **~47ms p50 voice round-trip latency**, making it suitable for experiments where timing fidelity matters. You can configure session parameters, monitor frame-level metrics, and replay session logs directly from the console.
+  </Card>
+  <Card title="Gateway Access & Routing Context" icon="network-wired">
+    The gateway is the central control plane for all service access in the Lab Console. You can select and switch gateway contexts to route traffic to different service configurations, isolate experiment environments, or apply group-scoped routing policies — all without leaving the console.
+  </Card>
+  <Card title="Keyword Spotting (KWS)" icon="ear">
+    The KWS subsystem provides wake-word detection and downstream routing in a single pipeline. You can configure custom wake words, set detection sensitivity thresholds, and observe trigger events with per-frame confidence scores. KWS events automatically route audio to the appropriate downstream handler within the same session.
+  </Card>
+  <Card title="Speech Enhancement" icon="waveform-lines">
+    The streaming speech enhancement service applies real-time noise suppression, dereverberation, and signal normalization to live audio. Enhancement runs in the audio path before downstream services receive the signal, so your voice experiments and interaction agents always operate on clean input. You can enable, disable, or tune enhancement parameters per session.
+  </Card>
+</CardGroup>
+
+## Access Model
+
+Access to the Lab Console is **personal or group-scoped** and must be explicitly authorized. You log in at [soundadam.com](https://soundadam.com) using your authorized credentials. If you are part of a research group, your group administrator may have already provisioned access for you. If not, see [Getting Access](/access) to learn how to request it.

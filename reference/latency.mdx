@@ -1,0 +1,129 @@
+---
+title: "Voice Latency Reference: Understanding 47ms Round Trip"
+sidebarTitle: "Latency"
+description: "Reference guide for voice latency in the Lab Console. Covers the 47ms p50 round-trip benchmark, latency components, and tips for optimizing session performance."
+---
+
+# Voice Latency Reference
+
+The SoundAdam Lab Console is engineered for low-latency, real-time voice interaction. This page explains what the **47ms p50 round-trip** benchmark means, how latency is distributed across pipeline components, and how to keep your sessions as responsive as possible.
+
+---
+
+## The 47ms p50 Benchmark
+
+The **p50 (50th percentile)** round-trip latency for a voice interaction in the Lab Console is **~47ms** under nominal conditions. This figure represents the *median* observed latency — meaning half of all voice round trips complete in 47ms or less.
+
+<Note>
+  **p50 is the median, not the ceiling.** 50% of round trips complete at or under 47ms. Tail latencies — such as p95 or p99 — will be measurably higher, especially under degraded network conditions or elevated group-session load. Plan your experiments around median performance, and account for variance in latency-sensitive workflows.
+</Note>
+
+This end-to-end figure encompasses every stage of the voice pipeline: from the moment audio is captured at your microphone, through speech enhancement, keyword spotting, gateway routing, and Voice Interaction Agent processing, to the moment the response audio is delivered back to your client.
+
+---
+
+## Latency Breakdown
+
+The table below shows the typical contribution of each pipeline stage to the total round-trip time. Values reflect observed medians under normal operating conditions.
+
+| Component | Typical Contribution |
+|---|---|
+| Microphone capture | ~2–5ms |
+| Speech Enhancement processing | ~5–10ms |
+| KWS (Keyword Spotting) detection | ~3–8ms |
+| Gateway routing | ~5–10ms |
+| Voice Interaction Agent processing | ~10–15ms |
+| Return path (response delivery) | ~5–10ms |
+| **Total p50** | **~47ms** |
+
+<Note>
+  Component contributions are additive and vary with session conditions. The figures above reflect p50 behavior. Individual components may spike independently during high-load or degraded-network conditions.
+</Note>
+
+### Component Descriptions
+
+<AccordionGroup>
+  <Accordion title="Microphone Capture (~2–5ms)">
+    The time required to capture, buffer, and encode an audio frame from your input device. Wired or high-quality USB microphones reduce this contribution. Bluetooth headsets and built-in laptop microphones tend to add encoding delay and jitter.
+  </Accordion>
+
+  <Accordion title="Speech Enhancement Processing (~5–10ms)">
+    Speech enhancement runs as a **streaming** process, applying noise suppression and signal normalization in near real-time before the audio frame is forwarded downstream. This is enabled by default. Processing time scales with the complexity of the enhancement profile and the signal-to-noise ratio of the input.
+  </Accordion>
+
+  <Accordion title="KWS Detection (~3–8ms)">
+    The Keyword Spotting engine continuously monitors the enhanced audio stream for configured wake words. Detection latency represents the time from the end of the wake-word utterance to the confirmation signal that triggers routing. Speaking clearly and at a consistent volume reduces this contribution.
+  </Accordion>
+
+  <Accordion title="Gateway Routing (~5–10ms)">
+    Once a session context is established or a wake word is confirmed, the gateway routes the audio payload to the appropriate processing endpoint. Routing time is influenced by geographic proximity to the gateway node and current session load across the group.
+  </Accordion>
+
+  <Accordion title="Voice Interaction Agent Processing (~10–15ms)">
+    The Voice Interaction Agent (duplex mode) is the largest single contributor to round-trip latency. This window covers model inference, context retrieval, and response generation. Complex queries or high group-session concurrency can push this component toward or beyond its upper bound.
+  </Accordion>
+
+  <Accordion title="Return Path (~5–10ms)">
+    The encoded response audio is delivered back to the client over the established WebSocket or streaming channel. Return-path latency is symmetric with inbound routing and similarly affected by network quality.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Factors That Increase Latency
+
+Several conditions can push your observed round-trip latency above the 47ms p50 baseline:
+
+<CardGroup cols={2}>
+  <Card title="Poor Network Quality" icon="wifi-slash">
+    High packet loss, unstable Wi-Fi, or congested connections increase both gateway routing time and return-path latency. This is the most common source of latency variance in field deployments.
+  </Card>
+  <Card title="Elevated Group-Session Load" icon="users">
+    When multiple group members are running concurrent voice sessions, shared gateway resources may be under higher contention, increasing routing and agent processing times.
+  </Card>
+  <Card title="Complex Speech Enhancement" icon="waveform-lines">
+    Environments with high background noise require more intensive enhancement processing, which can push the Speech Enhancement component toward the upper end of its range (~10ms or beyond).
+  </Card>
+  <Card title="Bluetooth or Low-Quality Microphones" icon="microphone-slash">
+    Bluetooth audio introduces encoding and buffering delays at the capture stage. Built-in microphones on laptops may also produce noisy signals that increase KWS detection time.
+  </Card>
+</CardGroup>
+
+---
+
+## Tips for Minimizing Latency
+
+<Steps>
+  <Step title="Use wired audio hardware">
+    A wired USB or 3.5mm microphone eliminates the Bluetooth stack entirely, reducing microphone capture latency and signal jitter. Studio-grade or headset microphones also produce cleaner signals, easing the load on speech enhancement.
+  </Step>
+  <Step title="Use a stable, wired network connection">
+    Ethernet connections provide lower and more consistent latency than Wi-Fi. If Wi-Fi is unavoidable, use a 5GHz band and position yourself close to the access point.
+  </Step>
+  <Step title="Use personal-scoped access for latency-critical experiments">
+    Personal access sessions are not subject to group-session concurrency contention. If your research requires consistent sub-50ms performance, request personal-scoped access rather than sharing a group session. See [Access & Authorization](/access/authorization) for details.
+  </Step>
+  <Step title="Minimize background noise">
+    Quieter environments reduce the processing burden on the speech enhancement pipeline and improve KWS detection speed. Use a directional or noise-cancelling microphone where possible.
+  </Step>
+  <Step title="Monitor the console latency indicator">
+    The Lab Console displays a live latency indicator during active sessions. Use this to baseline your environment before starting a recording or experiment run.
+  </Step>
+</Steps>
+
+<Tip>
+  During an active session, watch the **latency indicator** in the Lab Console header. A green indicator confirms you are operating within the expected p50 range. Yellow or red indicators suggest network or load issues — consider pausing your session and retrying on a better connection before collecting experiment data.
+</Tip>
+
+---
+
+## Summary
+
+| Metric | Value |
+|---|---|
+| Round-trip latency (p50) | ~47ms |
+| Primary variable component | Voice Interaction Agent (~10–15ms) |
+| Most common external factor | Network quality |
+| Recommended setup | Wired audio + Ethernet + personal access |
+
+For access configuration guidance, see [Access & Authorization](/access/authorization). For session management and runbook workflows, see the [Lab Console Runbook](/console/runbook).

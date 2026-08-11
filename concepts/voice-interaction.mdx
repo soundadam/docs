@@ -1,0 +1,135 @@
+---
+title: "Voice Interaction Agent: Duplex Communication"
+sidebarTitle: "Voice Interaction"
+description: "The Voice Interaction Agent enables full-duplex, real-time bidirectional voice communication with ~47ms round-trip latency for voice experiments."
+---
+
+The Voice Interaction Agent is the core conversational engine in Lab Console. It accepts a continuous audio stream, processes natural speech in real time, and delivers synthesized or structured audio responses — all while maintaining an open, bidirectional channel so you can speak and receive responses simultaneously without push-to-talk delays or turn-taking interruptions.
+
+## What the Voice Interaction Agent Does
+
+The agent handles the full interactive voice loop for your experiments:
+
+- **Receives** a routed audio stream from the gateway, pre-processed by Speech Enhancement
+- **Understands** speech intent in real time using the model configuration defined in your gateway context
+- **Responds** with synthesized audio (or structured data output) on the same duplex connection
+- **Maintains** conversational state across turns for the lifetime of the session
+
+Because the agent is always downstream of the gateway, it automatically inherits the experiment context — model version, pipeline flags, session identity — without requiring any per-request configuration from your client.
+
+## What "Duplex" Means
+
+In Lab Console, **full duplex** means the audio channel between your client and the Voice Interaction Agent is simultaneously open in both directions. Unlike half-duplex systems (which alternate between send and receive), a full-duplex channel lets you:
+
+- **Speak while the agent is responding** — the agent detects interruptions and can respond dynamically
+- **Receive audio output without a perceptible gap** — there is no push-to-talk wait state
+- **Run continuous interaction experiments** — no artificial turn boundaries imposed by the transport layer
+
+This matters for research scenarios that require natural, unscripted dialogue — latency and interruption handling behave the way a real conversation does, not like a voice-menu system.
+
+## Round-Trip Latency: ~47ms p50
+
+The Voice Interaction Agent is designed for a **~47ms round-trip latency at the 50th percentile (p50)**. Here is what that means in practice:
+
+| Metric | Value | What It Means |
+|---|---|---|
+| **p50 round-trip** | ~47ms | Half of all interactions complete within 47ms end-to-end |
+| **Perceptible threshold** | ~100–150ms | Human speech perception; 47ms is well below noticeable delay |
+| **Experiment reproducibility** | Consistent | Gateway context pinning keeps pipeline configuration stable across turns |
+
+The 47ms figure covers the full path: audio capture → Speech Enhancement → KWS routing → Voice Agent processing → response audio delivery. It does not include final speaker playback, which depends on your local audio hardware.
+
+<Tip>
+  In **group-scoped sessions**, multiple clients share the same gateway context and pipeline resources. Under high concurrency — many group members active simultaneously — p50 latency may increase modestly. For latency-sensitive experiments, consider running in personal-scoped sessions to isolate resources, or schedule group experiments during off-peak windows. See [Group-Scoped Access](/access/group-scoped) for configuration options.
+</Tip>
+
+## Integration with Keyword Spotting (KWS)
+
+The Voice Interaction Agent does not listen continuously to all audio. Instead, it receives audio **only after KWS has detected the configured wake word**. This integration works as follows:
+
+1. **KWS listens passively** — the keyword spotter monitors the raw audio stream client-side without forwarding it to the agent
+2. **Wake word detected** — KWS triggers a routing event through the gateway
+3. **Gateway opens agent connection** — the agent receives the post-wake-word audio as a routed stream
+4. **Agent responds** — the duplex channel is now active and the agent handles the conversation turn
+5. **Session returns to passive listening** — after the interaction completes or a silence timeout is reached, KWS resumes passive monitoring
+
+This pattern keeps the agent from processing irrelevant background audio and ensures every agent interaction begins with a clearly delineated, intentional speech event.
+
+For full details on KWS configuration, see [Keyword Spotting](/concepts/kws).
+
+## Integration with Speech Enhancement
+
+Audio reaching the Voice Interaction Agent has already passed through the Speech Enhancement pipeline. This means:
+
+- **Noise is reduced** before the agent attempts speech recognition, improving understanding accuracy
+- **Voice clarity is improved** so the agent model receives a cleaner signal with fewer ambiguous phonemes
+- **Streaming processing** ensures the enhancement does not add meaningful latency — audio is processed frame-by-frame in real time
+
+The agent is designed to receive Speech Enhancement output as its standard input. You do not need to disable or bypass enhancement to use the agent; it is always active in Lab Console sessions.
+
+For details on the enhancement pipeline itself, see [Speech Enhancement](/concepts/speech-enhancement).
+
+## The Audio Pipeline
+
+Every voice interaction in Lab Console follows a consistent path from microphone to output:
+
+<Steps>
+  <Step title="Microphone Capture">
+    Raw audio is captured from your input device by the Lab Console client. No audio is sent to the gateway at this stage — it is processed locally first.
+  </Step>
+  <Step title="Keyword Spotting (KWS)">
+    The KWS engine monitors the local audio stream for the configured wake word. This runs entirely on the client side. No audio is forwarded to the cloud unless the wake word is detected.
+  </Step>
+  <Step title="Speech Enhancement">
+    Immediately upon wake word detection (and throughout the subsequent utterance), the audio stream is passed through the Speech Enhancement pipeline. Noise reduction and clarity processing are applied in real time, frame by frame.
+  </Step>
+  <Step title="Gateway Routing">
+    The enhanced audio stream is forwarded to the SoundAdam Gateway, which resolves session context and routes the stream to the Voice Interaction Agent.
+  </Step>
+  <Step title="Voice Interaction Agent">
+    The agent receives the clean, routed audio stream and processes it using the model configuration in the current gateway context. It generates a response in real time.
+  </Step>
+  <Step title="Audio Output">
+    The agent's response audio is streamed back through the gateway to your Lab Console client and delivered to your output device, completing the full-duplex round trip.
+  </Step>
+</Steps>
+
+```
+Microphone
+    │
+    ▼
+┌───────┐     wake word      ┌───────────────────┐
+│  KWS  │ ── detected ──────▶│ Speech Enhancement │
+└───────┘                    └────────┬──────────┘
+                                      │ clean audio
+                                      ▼
+                              ┌──────────────┐
+                              │   Gateway    │  ← context + routing
+                              └──────┬───────┘
+                                     │
+                                     ▼
+                        ┌────────────────────────┐
+                        │  Voice Interaction      │
+                        │  Agent (full duplex)    │
+                        └────────────┬───────────┘
+                                     │
+                                     ▼
+                               Audio Output
+```
+
+## Related Concepts
+
+<CardGroup cols={2}>
+  <Card title="Gateway" icon="route" href="/concepts/gateway">
+    Understand how the gateway routes audio to the Voice Interaction Agent and manages session context.
+  </Card>
+  <Card title="Keyword Spotting (KWS)" icon="ear" href="/concepts/kws">
+    Learn how wake word detection triggers routing to the Voice Interaction Agent.
+  </Card>
+  <Card title="Speech Enhancement" icon="waveform" href="/concepts/speech-enhancement">
+    See how streaming audio processing improves the signal before it reaches the agent.
+  </Card>
+  <Card title="Group-Scoped Access" icon="users" href="/access/group-scoped">
+    Configure shared sessions for research group experiments with the Voice Interaction Agent.
+  </Card>
+</CardGroup>

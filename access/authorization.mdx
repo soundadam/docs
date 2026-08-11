@@ -1,0 +1,144 @@
+---
+title: "Authorization and Console Access Management"
+sidebarTitle: "Authorization"
+description: "Understand how authorization works in the SoundAdam Lab Console, how to request access, and what permissions control personal and group-scoped sessions."
+---
+
+## The Authorized Access Model
+
+Access to the SoundAdam Lab Console is **granted, not self-serve**. The console is an authorized research service — there is no open registration or public sign-up flow. Every user must be explicitly provisioned by an admin or a research group lead before they can log in, activate a context, or start a session.
+
+This model ensures that gateway resources, runbook data, and voice experiment infrastructure remain available exclusively to authorized research personnel and their teams.
+
+<Note>
+  Authorization may be time-limited for research cohorts. If your access was granted for a specific research period, study phase, or project cycle, it may expire at the end of that window. Check with your admin or group lead to confirm the duration of your access grant and request renewal before your authorization lapses.
+</Note>
+
+---
+
+## How to Request Personal Access
+
+Personal access authorizes you as an individual user to log in to the Lab Console and operate within a private gateway context.
+
+<Steps>
+  <Step title="Identify Your Admin or Group Lead">
+    Determine who is responsible for managing Lab Console access for your institution or research group. This is typically your principal investigator (PI), lab administrator, or a designated research group lead.
+  </Step>
+  <Step title="Submit Your Access Request">
+    Contact your admin or group lead and provide:
+    - Your full name and institutional affiliation
+    - The email address you want associated with your Lab Console account
+    - A brief description of your intended use (e.g., KWS benchmarking, speech enhancement evaluation, duplex voice experiments)
+  </Step>
+  <Step title="Admin Provisions Your Account">
+    Your admin will create your account and assign personal access permissions through the Lab Console admin panel. You will receive login credentials or an activation link via the email you provided.
+  </Step>
+  <Step title="Log In and Verify Access">
+    Navigate to [https://soundadam.com](https://soundadam.com) and log in with your credentials. Confirm that the **Personal** context is available in the Context Selector before starting your first session.
+  </Step>
+</Steps>
+
+---
+
+## How to Request Group Access
+
+Group-scoped access allows you to participate in a shared gateway context with your research team. This access type is managed entirely by the research group lead — not by a general admin.
+
+<Steps>
+  <Step title="Contact Your Research Group Lead">
+    Reach out to the lead of the research group whose Lab Console scope you need to join. Provide your registered Lab Console username or the email associated with your account.
+  </Step>
+  <Step title="Group Lead Adds You to the Group">
+    Your group lead will add your account to the group through their admin panel. Group membership grants you access to the shared gateway context, shared runbook, and group-scoped session tokens.
+  </Step>
+  <Step title="Confirm Group Context Availability">
+    After being added, log in to [https://soundadam.com](https://soundadam.com) and open the Context Selector. Your group name should appear alongside your personal context as an available scope.
+  </Step>
+</Steps>
+
+<Note>
+  If you do not yet have a personal account, you must request personal access first. Group access is an additional scope layered on top of an existing authorized user account — it does not replace or substitute for individual authorization.
+</Note>
+
+---
+
+## Permissions Overview
+
+Authorization in the Lab Console is permission-based. The specific capabilities you hold depend on the access type granted to your account.
+
+<AccordionGroup>
+  <Accordion title="Runbook Permissions">
+    | Permission | Personal Access | Group-Scoped Access |
+    |---|---|---|
+    | Read own runbook entries | ✅ | ✅ |
+    | Write to runbook | ✅ | ✅ |
+    | Read group runbook entries | ❌ | ✅ |
+    | Write to group runbook | ❌ | ✅ |
+  </Accordion>
+  <Accordion title="Gateway Context Permissions">
+    | Permission | Personal Access | Group-Scoped Access |
+    |---|---|---|
+    | Access personal gateway context | ✅ | ✅ |
+    | Access group gateway context | ❌ | ✅ |
+    | Modify gateway configuration | ✅ (personal only) | ✅ (group context) |
+  </Accordion>
+  <Accordion title="Session Permissions">
+    | Permission | Personal Access | Group-Scoped Access |
+    |---|---|---|
+    | Start personal sessions | ✅ | ✅ |
+    | Start group sessions | ❌ | ✅ |
+    | View active group sessions | ❌ | ✅ |
+    | Launch voice experiments | ✅ | ✅ |
+    | Access KWS and speech enhancement | ✅ | ✅ |
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Session Tokens and Scoping
+
+When you start a session in the Lab Console, the system issues a **session token** that encodes your authorization context. Tokens govern what resources your session can access and how activity is attributed in the runbook.
+
+### Personal Session Tokens
+
+- **Scoped to your user identity** — the token is bound to your account and cannot be used to access group-scoped resources.
+- **Valid for the duration of your session** — tokens expire when the session ends or after an inactivity timeout.
+- **Non-transferable** — a personal token issued to your account cannot authenticate requests made by another user.
+
+### Group Session Tokens
+
+- **Scoped to the group identity** — the token is bound to the group scope, not to an individual user, enabling shared gateway context access.
+- **Carry member attribution** — even though the token is group-scoped, all activity performed under it is attributed to the specific group member who initiated the action.
+- **Require active group membership** — if your group membership is revoked, your group session tokens are immediately invalidated.
+
+<Warning>
+  Sharing your credentials or session tokens with other users — including colleagues and group members — is a direct violation of Lab Console access policies. Session tokens are scoped to individual identities (personal) or specific group memberships (group-scoped) and must not be distributed. Unauthorized token sharing may result in immediate access revocation for all parties involved. Each authorized user must authenticate with their own credentials.
+</Warning>
+
+---
+
+## Handling Authorization Errors
+
+If you encounter an authorization error when logging in or attempting to start a session, the most likely causes are:
+
+- Your access grant has expired (common for time-limited research cohorts)
+- Your account has not yet been provisioned by an admin
+- Your group membership has not been added by your group lead
+- Your session token has become invalid due to a context mismatch
+
+<Tip>
+  If you receive an authorization error, your first step should be to contact your research group lead directly. Group leads have visibility into group membership status and can quickly verify whether your access is active, expired, or pending. For personal access issues that your group lead cannot resolve, escalate to your lab admin.
+</Tip>
+
+---
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Personal Access" icon="user" href="/access/personal">
+    Learn about isolated, individually scoped Lab Console sessions for solo experiments and private testing.
+  </Card>
+  <Card title="Group-Scoped Access" icon="users" href="/access/group-scoped">
+    Learn how research teams share a common gateway context for collaborative voice experiments.
+  </Card>
+</CardGroup>

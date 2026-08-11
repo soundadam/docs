@@ -1,47 +1,59 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with SoundAdam Lab Console"
+sidebarTitle: "Quickstart"
+description: "Learn how to access the Lab Console, connect to the gateway, and run your first real-time voice experiment in a few steps."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+This guide walks you through everything you need to go from zero to a running real-time voice experiment on the SoundAdam Lab Console. By the end, you will have authorized access, an active gateway connection, and firsthand experience with keyword spotting, speech enhancement, and duplex voice interaction — the three pillars of the Lab Console's voice pipeline.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+## Steps
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+  <Step title="Request Access">
+    The Lab Console is an authorized research service. Before you can log in, you need an active access grant — either personal or group-scoped. If your research group already has a Lab Console agreement, your group administrator can provision access for you directly.
 
-    ```bash
-    npm install your-package
-    ```
+    If you are requesting access independently, submit a request through the access portal and allow time for review. Open requests are not automatically granted.
+
+    See [Getting Access](/access) for full details on both access paths and what to expect during review.
   </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+  <Step title="Open the Lab Console">
+    Once your access is confirmed, navigate to [soundadam.com](https://soundadam.com) and log in with your authorized credentials.
 
-    ```bash
-    your-cli init
-    ```
+    After a successful login, you will land on the Lab Console home screen. From here you can view your active gateway context, available services, and recent experiment sessions. If your account is group-scoped, you will also see shared resources and group-level configuration your administrator has set up.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+  <Step title="Connect to the Gateway">
+    The gateway is the control plane that governs service access and routes audio traffic to the correct processing pipeline. Before starting an experiment, confirm that you are connected to the right gateway context for your work.
 
-    ```bash
-    your-cli start
-    ```
+    In the Lab Console sidebar, open **Gateway** and review the active context. If you need to switch contexts — for example, to isolate an experiment environment or access a different service configuration — select the appropriate context from the dropdown and confirm the switch. The console will display your current connection status and any routing policies in effect.
+
+    For a deeper explanation of how gateway contexts work, see [Gateway Concepts](/concepts/gateway).
+  </Step>
+  <Step title="Run a Voice Experiment">
+    With the gateway connected, you are ready to start your first voice experiment session.
+
+    1. From the Lab Console home or the **Experiments** panel, select **New Session**.
+    2. Configure your session parameters (sample rate, enhancement settings, KWS sensitivity) or accept the defaults for a standard experiment.
+    3. Click **Start Session** and wait for the session to reach the **Active** state.
+    4. Speak your configured KWS wake word (default: check your session config) clearly into your microphone. The console will display a KWS trigger event with a per-frame confidence score and route the audio to the duplex Voice Interaction Agent automatically.
+    5. Continue speaking naturally. Speech enhancement is active in the audio path, so the agent receives a cleaned signal regardless of your environment. The Voice Interaction Agent responds in full-duplex — you can speak and receive a response simultaneously without push-to-talk.
+    6. End the session by clicking **Stop Session** when your experiment is complete.
+
+    <Tip>
+      The Lab Console targets **~47ms p50 voice round-trip latency** — measured from the end of your utterance to the start of the agent response. You will see live latency readings in the session metrics panel as you interact. Latency spikes outside this range are surfaced automatically in the runbook log for review.
+    </Tip>
+  </Step>
+  <Step title="Review Results">
+    After stopping your session, the console archives the run and surfaces a summary in the **Session Results** panel.
+
+    - **Latency Metrics** — Review p50, p95, and p99 round-trip latency across the full session. Compare against the ~47ms p50 baseline to evaluate your configuration.
+    - **KWS Events** — Inspect every wake-word trigger, its timestamp, confidence score, and which downstream handler it routed to.
+    - **Enhancement Stats** — View per-frame noise reduction levels and any frames where the enhancement model flagged unusual input conditions.
+    - **Runbook Logs** — The structured runbook log captures every state transition, routing decision, and error event in the session. Use this for debugging, reproducibility, and sharing results with your research group.
+
+    You can export session data in JSON or CSV format from the results panel for offline analysis.
   </Step>
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+<Note>
+  This quickstart covers the essentials of running a session. For a thorough explanation of how the duplex Voice Interaction Agent handles turn-taking, barge-in, and audio framing, see [Voice Interaction Concepts](/concepts/voice-interaction).
+</Note>

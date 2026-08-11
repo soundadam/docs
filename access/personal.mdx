@@ -1,0 +1,97 @@
+---
+title: "Personal Access: Individual Lab Console Sessions"
+sidebarTitle: "Personal Access"
+description: "Personal access gives individual users a private gateway context and isolated Lab Console session, separate from any research group scope."
+---
+
+## What Is Personal Access?
+
+Personal access is an individually scoped authorization mode for the SoundAdam Lab Console. When you operate under personal access, you receive a dedicated gateway context that is fully isolated to your user account — no other researchers share your session state, runbook logs, or voice experiment environment.
+
+This mode is designed for researchers who need a controlled, private workspace within the Lab Console, whether for exploratory experimentation, individual benchmarking, or private testing of new voice pipelines before sharing them with a group.
+
+---
+
+## What Personal Access Isolates
+
+When you activate personal access, the following resources are scoped exclusively to your account:
+
+<CardGroup cols={2}>
+  <Card title="Gateway Context" icon="circle-nodes">
+    Your gateway session state is private. No other user can read, modify, or share your gateway context. Each session you start initializes against your personal context only.
+  </Card>
+  <Card title="Runbook Logs" icon="scroll">
+    All session events, interaction traces, and experimental logs are written exclusively to your personal runbook. Other users — including group members — cannot see your entries.
+  </Card>
+  <Card title="Voice Experiments" icon="microphone">
+    Real-time voice experiments, duplex voice interactions, keyword spotting (KWS) runs, and speech enhancement tasks are all executed within your isolated session boundary.
+  </Card>
+  <Card title="Session Tokens" icon="key">
+    Authorization tokens issued under personal access are scoped to your user identity. They cannot be used to access group-scoped resources without an explicit context switch.
+  </Card>
+</CardGroup>
+
+---
+
+## When to Use Personal Access
+
+Personal access is the right choice when:
+
+- **You are running solo experiments** — benchmarking a KWS model, testing a new speech enhancement pipeline, or validating real-time duplex behavior independently of your team.
+- **You need private testing** — you are iterating on a configuration or runbook setup that you do not want visible to your research group until it is ready.
+- **You want an isolated baseline** — you need results that are not influenced by simultaneous group-session activity, shared gateway load, or other members' experiment events.
+- **You are onboarding to the console** — getting familiar with Lab Console features before participating in a shared group session.
+
+---
+
+## How to Activate Personal Access
+
+Once you have been authorized by an admin, activating personal access is straightforward:
+
+<Steps>
+  <Step title="Log in to the Lab Console">
+    Navigate to [https://soundadam.com](https://soundadam.com) and sign in with your authorized credentials.
+  </Step>
+  <Step title="Open the Context Selector">
+    After logging in, locate the **Context Selector** in the top navigation bar or the session setup panel. This control shows your currently active session scope.
+  </Step>
+  <Step title="Select Personal Context">
+    From the context dropdown, choose **Personal**. The console will confirm the active context by displaying your username or personal context label in the session header.
+  </Step>
+  <Step title="Start Your Session">
+    With personal context active, start a gateway session or launch a voice experiment. All activity from this point will be logged to your personal runbook and remain isolated to your account.
+  </Step>
+</Steps>
+
+---
+
+## Personal Access vs. Group-Scoped Access
+
+| Feature | Personal Access | Group-Scoped Access |
+|---|---|---|
+| Gateway context | Isolated to your account | Shared across group members |
+| Runbook visibility | Private — your logs only | Shared — all members' events visible |
+| Voice experiments | Run in isolation | May reflect shared session state |
+| Session tokens | Scoped to your user identity | Scoped to the group |
+| Best for | Solo work, private testing | Collaborative research, joint experiments |
+
+Switching between personal and group-scoped context can be done at any time from the Context Selector, provided you hold the appropriate authorization for both scopes.
+
+---
+
+<Note>
+  Personal access is not self-serve. You must be explicitly authorized by an admin or research group lead before you can log in and activate a personal context. If you have not yet received authorization, see the [Authorization](/access/authorization) page for instructions on how to request access.
+</Note>
+
+---
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Group-Scoped Access" icon="users" href="/access/group-scoped">
+    Learn how research teams share a common gateway context for collaborative voice experiments.
+  </Card>
+  <Card title="Authorization" icon="shield-check" href="/access/authorization">
+    Understand how access is granted, how to request permissions, and how session tokens are scoped.
+  </Card>
+</CardGroup>

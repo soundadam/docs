@@ -1,13 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "SoundAdam Lab Console",
+  "projectType": "saas",
+  "projectName": "SoundAdam Lab Console",
+  "projectDescription": "An authorized research service console providing gateway context, real-time voice experiments, duplex voice interaction, keyword spotting, and speech enhancement for research groups.",
   "theme": "luma",
-  "colors": {
-    "primary": "#6C63FF",
-    "light": "#6C63FF",
-    "dark": "#0F0F1A"
-  },
-  "favicon": "/favicon.svg",
+  "primaryColor": "#1A1A2E",
+  "lightColor": "#6C63FF",
+  "darkColor": "#0F0F1A",
   "navigation": {
     "tabs": [
       {
@@ -58,14 +56,21 @@
       }
     ]
   },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Open Console",
-      "href": "https://soundadam.com"
-    }
-  },
-  "footer": {
-    "socials": {}
-  }
+  "keyFeatures": [
+    "Real-time voice interaction with ~47ms p50 round-trip latency",
+    "Duplex voice communication channel",
+    "Keyword Spotting (KWS) wake word detection and routing",
+    "Streaming speech enhancement pipeline",
+    "Gateway with personal and group-scoped access control",
+    "Authorized research service console",
+    "Runbook-driven experiment workflows"
+  ],
+  "publicApiSurface": [
+    "Gateway context API",
+    "Voice Interaction Agent (duplex)",
+    "KWS Response — wake + route",
+    "Speech Enhancement — streaming",
+    "Group-scoped service access",
+    "Lab Console session control"
+  ]
 }
