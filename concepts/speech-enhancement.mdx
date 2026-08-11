@@ -1,7 +1,7 @@
 ---
-title: "Speech Enhancement: Streaming Audio Processing"
+title: "Speech Enhancement: Real-Time Streaming Audio Processing"
 sidebarTitle: "Speech Enhancement"
-description: "Speech Enhancement in Lab Console applies real-time streaming audio processing to reduce noise and improve voice clarity before routing to the Voice Interaction Agent."
+description: "Lab Console Speech Enhancement applies real-time streaming audio processing to reduce noise and improve voice clarity for every routed voice session."
 ---
 
 Speech Enhancement is the real-time audio processing layer that sits between microphone capture and the Voice Interaction Agent. It operates on a continuous stream of raw audio frames — reducing background noise, suppressing reverberation, and improving voice clarity — without introducing perceptible latency or interrupting the flow of a live conversation. The result is a cleaner signal for every downstream stage: KWS detection is more accurate, gateway routing carries higher-quality audio, and the Voice Interaction Agent receives speech that is easier to recognize and respond to correctly.
@@ -91,11 +91,11 @@ Speech Enhancement improves outcomes across every layer of the voice pipeline:
 
 ### KWS Accuracy Uplift
 
-Speech Enhancement indirectly improves KWS accuracy for the audio that is forwarded after detection. While KWS itself runs on raw audio, the pre-roll buffer (the short audio captured just before the wake word timestamp) passes through enhancement before reaching the gateway. A cleaner pre-roll reduces false context being sent to the agent at the start of each turn.
+Speech Enhancement indirectly improves the quality of audio forwarded after wake word detection. While KWS itself runs on raw audio, the short audio captured just before the detection moment — preserved to avoid clipping the start of your utterance — passes through enhancement before reaching the gateway. Enhancing this audio reduces unwanted noise context at the very start of each interaction turn.
 
 ### Agent Response Quality
 
-Voice models perform significantly better on clean, broadband speech. Background noise forces models to allocate probability mass across more phoneme candidates, increasing the chance of misrecognition. By delivering a clean signal, Speech Enhancement effectively narrows the recognition search space — which is especially valuable in research experiments that involve low-frequency technical terms, domain-specific jargon, or commands that are not well-represented in general speech corpora.
+Voice models perform significantly better on clean, broadband speech. Background noise increases the chance of misrecognition, especially for technical vocabulary, domain-specific terms, and commands that are less common in everyday speech. By delivering a clean signal, Speech Enhancement improves recognition accuracy for exactly the kinds of inputs that matter most in research experiments.
 
 ## Related Concepts
 

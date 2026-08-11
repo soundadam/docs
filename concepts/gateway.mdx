@@ -1,7 +1,7 @@
 ---
-title: "What Is the SoundAdam Gateway?"
+title: "SoundAdam Gateway: Routing, Context, and Access Control"
 sidebarTitle: "Gateway"
-description: "The SoundAdam Gateway manages service routing, context propagation, and access control for all Lab Console sessions and voice experiments."
+description: "The SoundAdam Gateway manages service routing, context propagation, and access control for every Lab Console session and voice experiment."
 ---
 
 The SoundAdam Gateway is the central control plane for every session you run in [Lab Console](https://soundadam.com). Before any audio reaches a voice agent or experiment service, it passes through the gateway — which resolves routing, attaches context, and enforces access scope. Think of it as the intelligent front door that decides where your request goes, what it knows about you, and who is allowed to share that session.
@@ -27,11 +27,11 @@ The gateway performs three interconnected functions on every request:
 **Gateway context** is the bundle of metadata the gateway resolves and forwards alongside your audio stream or API request. It includes:
 
 - **Session identity** — a unique session token tied to your authenticated Lab Console login
-- **Experiment parameters** — model versions, pipeline flags, and feature toggles active for the current run
+- **Experiment parameters** — model versions and experiment settings active for the current run
 - **Access scope** — whether the session is personal or shared with a research group
 - **Routing hints** — which services are enabled (e.g., KWS → Speech Enhancement → Voice Agent)
 
-Context matters because voice experiments are stateful. A duplex voice session that spans multiple turns needs each turn to carry the same experiment configuration. If context drifts between hops — say, a different model version is resolved mid-session — results become inconsistent and unreproducible. The gateway pins context at session initialization and propagates it to every downstream service for the lifetime of the session.
+Context matters because voice experiments are stateful. A duplex voice session that spans multiple turns needs each turn to carry the same experiment configuration. If context drifts mid-session — for example, if a different model version were resolved partway through — results become inconsistent and unreproducible. The gateway pins context at session initialization and propagates it to every service in the pipeline for the lifetime of the session.
 
 <Note>
   Gateway context is resolved once at session start and remains immutable for the duration of that session. If you change experiment parameters, you must start a new session to pick up the updated context.
@@ -50,7 +50,7 @@ Lab Console supports two access scopes, both managed through the gateway:
 - For details on setting up and managing group-scoped access, see [Group-Scoped Access](/access/group-scoped).
 
 <Note>
-  In group-scoped sessions, all members share the same gateway context — including experiment parameters and routing configuration. Changes made by one group member (such as adjusting a pipeline flag) are visible to all participants in that session.
+  In group-scoped sessions, all members share the same gateway context — including experiment parameters and routing configuration. Changes made by one group member (such as updating experiment settings) are visible to all participants in that session.
 </Note>
 
 ## How Sessions Flow Through the Gateway
@@ -62,10 +62,10 @@ Every Lab Console session follows the same gateway-mediated path, from the momen
     Your Lab Console client authenticates with the gateway using your account credentials. The gateway issues a session token and resolves your access scope (personal or group).
   </Step>
   <Step title="Context Resolution">
-    The gateway reads your active experiment configuration — model versions, pipeline flags, enabled features — and assembles the gateway context bundle that will travel with every request in this session.
+    The gateway reads your active experiment configuration — model versions and enabled features — and assembles the gateway context bundle that will travel with every request in this session.
   </Step>
   <Step title="Routing Decision">
-    Based on context and the incoming request type (voice stream, KWS trigger, API call), the gateway selects the appropriate downstream service path and opens a routed connection.
+    Based on context and the type of incoming request — a voice stream, a KWS trigger, or a direct Lab Console action — the gateway selects the appropriate service path and opens a routed connection.
   </Step>
   <Step title="Service Execution">
     The request (with attached context) flows through the configured pipeline — for example: Speech Enhancement → KWS → Voice Interaction Agent — with each service reading from and writing back to the shared context.

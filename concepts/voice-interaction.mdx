@@ -1,5 +1,5 @@
 ---
-title: "Voice Interaction Agent: Duplex Communication"
+title: "Voice Interaction Agent: Full-Duplex Real-Time Audio"
 sidebarTitle: "Voice Interaction"
 description: "The Voice Interaction Agent enables full-duplex, real-time bidirectional voice communication with ~47ms round-trip latency for voice experiments."
 ---
@@ -15,7 +15,7 @@ The agent handles the full interactive voice loop for your experiments:
 - **Responds** with synthesized audio (or structured data output) on the same duplex connection
 - **Maintains** conversational state across turns for the lifetime of the session
 
-Because the agent is always downstream of the gateway, it automatically inherits the experiment context — model version, pipeline flags, session identity — without requiring any per-request configuration from your client.
+Because the agent is always downstream of the gateway, it automatically inherits the experiment context — model version, experiment settings, and session identity — without requiring any per-request configuration from your client.
 
 ## What "Duplex" Means
 
