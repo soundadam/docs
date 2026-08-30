@@ -22,7 +22,7 @@ Base URL：`https://llm.soundadam.com`
     付费入口：`https://soundadam.com/pricing/`。钱包按人民币（CNY）显示。
   </Step>
   <Step title="建令牌">
-    控制台「令牌」→「新建」。按用途选分组：`chat`（通用对话）、`codex`（Codex Pro 号池）、`image`（生图）。不要选 `lab`。令牌形如 `sk-xxxxxxxx`。
+    控制台「令牌」→「新建」。主力选 `chat` / `codex` / `image`（0.5 倍）。不要停在 `default`（官方默认价），不要选 `lab`。令牌形如 `sk-xxxxxxxx`。
   </Step>
   <Step title="接客户端">
     把主机和令牌填进客户端。协议决定要不要带 `/v1`（见上）。
@@ -65,14 +65,14 @@ curl -sS https://llm.soundadam.com/v1/chat/completions \
 
 | 分组 | 用途 | 可外接 | 保证 |
 | --- | --- | --- | --- |
-| `default` | 新账号默认组，可调 `chat` 文本模型 | — | — |
-| `chat` | 通用对话：GPT / Gemini 文本模型 | 是 | — |
-| `codex` | **Codex Pro 号池**，全量 GPT-5.x + Codex 模型 | 是 | 假一赔十 |
-| `codex-cheap` | Codex 低价号池，对标官方价整体 0.45x | 是 | — |
-| `image` | 生图：`gpt-image-*`、Gemini image | 是 | — |
+| `default` | 新账号默认组，官方默认价，可调 `chat` 文本模型。不建议当主力 | — | — |
+| `chat` | 通用对话：GPT / Gemini 文本，分组倍率 0.5 | 是 | — |
+| `codex` | **Codex Pro 号池**，全量 GPT-5.x + Codex 模型，分组倍率 0.5 | 是 | 假一赔十 |
+| `codex-cheap` | Codex 低价号池，分组倍率 0.45 | 是 | — |
+| `image` | 生图：`gpt-image-*`、Gemini image，分组倍率 0.5 | 是 | — |
 | `lab` | 运营把个别 GitHub 用户调成不扣费。公众不可选 | — | — |
 
-模型清单与倍率见 [模型与计费](/models)。
+实时倍率与完整模型清单在登录后的控制台「模型广场」。分组用途见 [模型与分组](/models)。
 
 ## 站内功能
 
