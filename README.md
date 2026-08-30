@@ -23,12 +23,18 @@ folder, not the repository root). In the Mintlify dashboard:
    `docs.llm.soundadam.com` to cluster `public-origin-tls`. A custom
    domain is a DNS CNAME to Mintlify, later.
 
-Local preview:
+Local preview and checks:
 
 ```sh
 cd llm
 npx mint dev
+npx mint validate
+npx mint broken-links
 ```
+
+GitHub Actions on this repository run `mint validate` and `mint broken-links`
+from `llm/`. Connecting the Mintlify GitHub App is a separate dashboard
+step; the workflow does not deploy.
 
 ## NewAPI copy
 
