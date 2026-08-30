@@ -50,5 +50,10 @@
     "socials": {
       "github": "https://github.com/soundadam/docs"
     }
+  },
+  "seo": {
+    "metatags": {
+      "canonical": "https://docs.llm.soundadam.com"
+    }
   }
 }

@@ -19,10 +19,10 @@ folder, not the repository root). In the Mintlify dashboard:
 
 1. Connect GitHub App access to **this repository only**.
 2. Set the docs subdirectory to `llm`.
-3. This tree deploys to https://soundapi.mintlify.app. Do not add
-   `docs.soundadam.com` or `docs.llm.soundadam.com` to cluster
-   `public-origin-tls`. A custom domain is a DNS CNAME to Mintlify,
-   not a cluster SAN.
+3. This tree deploys to https://soundapi.mintlify.app. The public
+   host is https://docs.llm.soundadam.com (DNSPod CNAME to
+   `cname.mintlify.builders`). Do not add that name to cluster
+   `public-origin-tls` or `product-hosts.yaml`.
 
 Local preview and checks:
 
