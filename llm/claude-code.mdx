@@ -1,0 +1,140 @@
+---
+title: "Claude Code 接入"
+description: "用 soundadam 令牌驱动 Claude Code"
+---
+
+Claude Code 走 Anthropic Messages 协议。指向本站时 **Base URL 填主机，不加 `/v1`**。
+
+## 安装
+
+<CodeGroup>
+
+```bash macOS / Linux / WSL
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+```powershell Windows PowerShell
+irm https://claude.ai/install.ps1 | iex
+```
+
+```bash Homebrew
+brew install --cask claude-code
+```
+
+```powershell WinGet
+winget install Anthropic.ClaudeCode
+```
+
+```bash npm
+npm install -g @anthropic-ai/claude-code
+```
+
+</CodeGroup>
+
+装完执行 `claude --version` 验证。
+
+## 两种登录方式，二选一
+
+| 方式 | 说明 |
+| --- | --- |
+| 官方账号 | `claude` 首启走 OAuth 登录 Anthropic，不需要本站令牌。 |
+| 第三方 API Key | 用本站令牌 + `ANTHROPIC_BASE_URL`。**不要同时保留官方登录**，两者混用会 401。 |
+
+切到本站前先 `claude logout` 清掉官方登录态。
+
+## 用 soundadam 令牌配置
+
+令牌分组选 `chat`（或新账号的 `default`）。两种写法：
+
+### A. 环境变量
+
+```bash
+export ANTHROPIC_BASE_URL="https://llm.soundadam.com"
+export ANTHROPIC_AUTH_TOKEN="sk-你的令牌"
+```
+
+写进 `~/.bashrc` / `~/.zshrc` / PowerShell `$PROFILE` 持久化。
+
+### B. `~/.claude/settings.json`
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://llm.soundadam.com",
+    "ANTHROPIC_AUTH_TOKEN": "sk-你的令牌"
+  }
+}
+```
+
+<Note>
+IDE 插件（VS Code / JetBrains）会用自己的设置覆盖 shell 环境变量。插件里出现 401 时，把上面两项也填进插件设置。
+</Note>
+
+## 选模型
+
+本站 `chat` / `codex` 号池里没有 `claude-*` 模型名。Claude Code 默认会发 `claude-sonnet` / `claude-opus`，指向本站会「模型不存在」。**进入后执行 `/model` 切到本站模型**，例如：
+
+```
+/model gpt-5.6-sol
+```
+
+也可以用环境变量锁定：
+
+```bash
+export ANTHROPIC_MODEL="gpt-5.6-sol"
+export ANTHROPIC_SMALL_FAST_MODEL="gpt-5.4-mini"
+```
+
+可用模型见 [模型与分组](/models)。`gpt-5.6-luna` 有全局限速，不建议当主力。
+
+要跑 Codex Pro 号池（`gpt-5.3-codex-spark` 等），令牌分组改用 `codex`——该号池**可外接、假一赔十**。这时 `/model` 也要指向 GPT 模型名，不要留在 `claude-*`。
+
+## 常用命令
+
+| 命令 | 作用 |
+| --- | --- |
+| `/model` | 切换模型 |
+| `/cost` | 查看本次会话 token 与额度消耗 |
+| `/compact` | 压缩上下文，保留摘要 |
+| `/clear` | 清空上下文 |
+| `/resume` | 恢复历史会话 |
+| `/login` `/logout` | 官方账号登录态 |
+
+## 外接调用（SDK / 自建客户端）
+
+直接用 Anthropic SDK 或第三方 IDE 打本站 `/v1/messages` 时，**必须带 Claude CLI 型 User-Agent**，否则号池返回 `403 block`：
+
+```
+User-Agent: claude-cli/2.0.76 (external, cli)
+Authorization: Bearer sk-你的令牌
+```
+
+`claude` 命令本身已带正确 UA，无需手动设置。
+
+## CC Switch
+
+多套配置来回切，用 [CC Switch](https://github.com/farion1231/cc-switch)（GUI，支持 Claude Code / Codex / Gemini CLI）：
+
+<CodeGroup>
+
+```bash macOS
+brew tap farion1231/ccswitch && brew install --cask cc-switch
+```
+
+```bash Linux
+brew tap farion1231/ccswitch && brew install cc-switch
+```
+
+</CodeGroup>
+
+Windows 从 [Releases](https://github.com/farion1231/cc-switch/releases) 下载。新增配置时供应商选「自定义」，Base URL 填 `https://llm.soundadam.com`，API Key 填本站令牌，`model` 填本站模型名（如 `gpt-5.6-sol`），保存后重启终端。
+
+## 报错速查
+
+| 现象 | 排查 |
+| --- | --- |
+| `401` / Invalid API Key | 官方登录态没清；或 `ANTHROPIC_BASE_URL` 拼错带了 `/v1` |
+| `模型不存在` / unknown model | 还在用 `claude-*` 默认模型，执行 `/model` 切本站模型 |
+| `403 block` | 外接调用缺 Claude CLI 型 User-Agent |
+| `429` / 额度不足 | 新账户额度为 0，先在 `soundadam.com/pricing/` 充值 |
+| 首次连接超时 | 见 Anthropic 服务不可达通常是本地网络/代理，切换网络或开系统代理 / TUN 模式 |

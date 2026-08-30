@@ -1,0 +1,42 @@
+---
+title: "模型与分组"
+description: "令牌分组、模型清单与计费口径"
+---
+
+钱包按人民币（CNY）显示，最低充值 1 元。付费入口是 [soundadam.com/pricing/](https://soundadam.com/pricing/)。
+
+各分组的**实时倍率与完整模型清单以登录后控制台「模型广场」为准**。本页只写分组用途和常用模型概览，不维护第二套费率表。
+
+## 计费口径
+
+- 人民币结算，充值 1:1：`USDExchangeRate = 1`、`Price = 1`。充 ¥N 到账 ¥N 额度。
+- **模型单价**来自 NewAPI 官方倍率表（模型广场）。基准：模型倍率 `1` = ¥2 / 100 万输入 token。
+- **分组倍率**叠在模型单价上。`default` 是官方默认价；主力付费组 `chat` / `codex` / `image` 为 **0.5 倍**；`codex-cheap` 为 0.45 倍。
+- 输入扣费 = 输入 token × 模型倍率 × 分组倍率 × (¥2 / 1M)。输出再乘补全倍率。
+
+## 令牌分组
+
+按用途判断该选哪个。`lab` 公众不可选。
+
+### 默认
+
+| 分组 | 说明 | 可用模型 | `model` 填写建议 |
+| --- | --- | --- | --- |
+| `default` | 新账号所在组，官方默认价，可调 chat 文本模型。单价高于 0.5 档，不建议当主力 | GPT / Gemini 文本 | 建令牌时改到 `chat` |
+
+### 对话 / Codex / 生图
+
+| 分组 | 说明 | 可用模型 | `model` 填写建议 |
+| --- | --- | --- | --- |
+| `chat` | 通用对话，可外接，分组倍率 0.5 | GPT 文本、Gemini 文本、`gpt-oss-120b-medium` | 按模型广场 ID |
+| `codex` | Codex Pro 号池，可外接，假一赔十，分组倍率 0.5 | `gpt-5.6-sol` `gpt-5.6-terra` `gpt-5.6-luna` `gpt-5.5` `gpt-5.4` `gpt-5.4-mini` `gpt-5.3-codex-spark` `codex-auto-review` | 推荐 `gpt-5.6-sol` |
+| `codex-cheap` | Codex 低价子集，可外接，无假一赔十，分组倍率 0.45 | `gpt-5.6-sol` `gpt-5.6-terra` `gpt-5.6-luna` `gpt-5.5` | 推荐 `gpt-5.6-sol` |
+| `image` | 生图，可外接，分组倍率 0.5 | `gpt-image-1.5` `gpt-image-2` `gemini-3.1-flash-image` | 按图像模型 ID |
+
+`gpt-5.6-luna` 有全局限速，主要用于后台审查，不建议当主力日用模型。
+
+本站 C 端没有 Claude：antigravity 上游不可用。实验室 Claude 在 `https://llm2.soundadam.com`。
+
+## 「假一赔十」
+
+`codex` 号池承诺提供未降级的 Codex Pro 能力。若经核实号池被降级、掺假或以低配模型冒充，按争议期间该号池已扣额度的十倍返还。`codex-cheap` 及其他分组不在此保障内。逆向、越权、绕限流等违规使用一律不在保障范围（见[用户协议](/legal/user-agreement) D 节）。

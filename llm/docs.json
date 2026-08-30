@@ -34,8 +34,12 @@
   "navigation": {
     "groups": [
       {
-        "group": "C-end API",
-        "pages": ["index"]
+        "group": "开始",
+        "pages": ["index", "models"]
+      },
+      {
+        "group": "客户端接入",
+        "pages": ["claude-code", "codex"]
       },
       {
         "group": "协议",
