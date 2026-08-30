@@ -1,0 +1,102 @@
+---
+title: "Codex CLI 接入"
+description: "Codex Pro 号池，可外接，假一赔十"
+---
+
+Codex CLI 走 OpenAI 协议。指向本站时 **Base URL 必须带 `/v1`**：`https://llm.soundadam.com/v1`。
+
+令牌分组选 `codex`——本站的 **Codex Pro 号池**：全量 GPT-5.x + Codex 模型，**可外接、假一赔十**（号池被降级或掺假，按已扣额度十倍返还）。
+
+## 前置
+
+- Git（Windows 用 Git for Windows）
+- Node.js ≥ 18，含 npm
+
+## 安装
+
+```bash
+npm install -g @openai/codex
+codex --version
+```
+
+## 配置
+
+### `~/.codex/config.toml`
+
+```toml
+model = "gpt-5.6-sol"
+model_provider = "soundadam"
+model_reasoning_effort = "medium"
+
+[model_providers.soundadam]
+name = "soundadam"
+base_url = "https://llm.soundadam.com/v1"
+wire_api = "responses"
+env_key = "SOUNDADAM_API_KEY"
+```
+
+个别客户端不支持 Responses 协议时，把 `wire_api` 改成 `"chat"`。
+
+### 令牌
+
+```bash
+export SOUNDADAM_API_KEY="sk-你的令牌"
+```
+
+或写进 `~/.codex/auth.json`：
+
+```json
+{ "SOUNDADAM_API_KEY": "sk-你的令牌" }
+```
+
+## 启动
+
+```bash
+codex
+```
+
+## 推理深度
+
+`model_reasoning_effort` 控制推理投入，也可在会话内用 `/model` 调：
+
+| 取值 | 适用 |
+| --- | --- |
+| `low` | 简单改动、问答，最快 |
+| `medium` | 日常开发，推荐 |
+| `high` | 复杂算法 / 大范围重构，最慢最贵 |
+
+## 模型
+
+Codex Pro 号池（`codex` 分组）：
+
+`gpt-5.6-sol` · `gpt-5.6-terra` · `gpt-5.6-luna` · `gpt-5.5` · `gpt-5.4` · `gpt-5.4-mini` · `gpt-5.3-codex-spark` · `codex-auto-review`
+
+推荐 `gpt-5.6-sol`。`gpt-5.6-luna` 有全局限速，不建议当主力。倍率见 [模型与计费](/models)。
+
+预算敏感的场景可以把令牌分组换成 `codex-cheap`（对标官方价、整体 0.45 倍，模型子集 `gpt-5.6-sol` / `terra` / `luna` / `5.5`），无「假一赔十」。
+
+## 外接调用
+
+用 OpenAI SDK 或第三方客户端打本站 Codex 号池时，**带 Codex CLI 型 User-Agent**，否则 `403 block`：
+
+```
+User-Agent: codex_cli_rs/0.77.0 (Windows 10.0.26100; x86_64) WindowsTerminal
+Authorization: Bearer sk-你的令牌
+```
+
+`codex` 命令本身已带正确 UA。
+
+## CC Switch
+
+用 [CC Switch](https://github.com/farion1231/cc-switch) 管理配置：框架选「Codex」，供应商选「自定义」，Base URL 填 `https://llm.soundadam.com/v1`（GUI 会自动补 `/v1`，注意别重复），`model` 填 `gpt-5.6-sol`。写入 `~/.codex/config.toml` 与 `auth.json`。
+
+## 报错速查
+
+| 现象 | 排查 |
+| --- | --- |
+| `401` | 令牌错，或 `env_key` 名字和导出的环境变量对不上 |
+| `404` / 路由不到 | `base_url` 少了 `/v1` |
+| `403 block` | 外接调用缺 Codex CLI 型 User-Agent |
+| `unsupported` / 协议报错 | 把 `wire_api` 从 `responses` 换成 `chat` |
+| 图片输入报错 | 当前 Codex 号池模型不收图片输入 |
+| `429` / 额度不足 | 先在 `soundadam.com/pricing/` 充值 |

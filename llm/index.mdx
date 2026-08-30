@@ -1,32 +1,82 @@
 ---
 title: "soundadam C 端 API"
-description: "OpenAI-compatible API on llm.soundadam.com"
+description: "OpenAI / Anthropic 兼容的中转 API，主机 llm.soundadam.com"
 ---
 
-Base URL：`https://llm.soundadam.com`（调用时加 `/v1`）。
+Base URL：`https://llm.soundadam.com`
 
-这是对外的 NewAPI。WordPress（https://soundadam.com）是工作室站点与付费入口，不是这份手册。实验室密钥在 https://llm2.soundadam.com，不要把 C 端用户放进 Keycloak。控制台 Docs 按钮打开本站（https://docs.llm.soundadam.com）。
+- **Claude Code / Anthropic 协议**：`ANTHROPIC_BASE_URL` 直接填主机，**不加 `/v1`**。
+- **Codex CLI / OpenAI 协议**：`base_url` 填 `https://llm.soundadam.com/v1`，**要带 `/v1`**。
 
-## 开始
+最常见的错误就是把这两条弄反：Claude 的地址误加 `/v1`，Codex 的地址漏掉 `/v1`。
 
-1. 在 https://llm.soundadam.com 注册（密码或 GitHub）。新账户额度是 0。
-2. 付费入口：https://soundadam.com/pricing/。
-3. 创建令牌。分组选 `chat`、`codex` 或 `image`。不要选 `lab`。
-4. 客户端 `base_url` 填 `https://llm.soundadam.com/v1`，`api_key` 填该令牌。
+这是对外的 NewAPI 中转站。WordPress（`https://soundadam.com`）是工作室站点与付费入口，不是这份手册。实验室（课题组）密钥在 `https://llm2.soundadam.com`（Bifrost + Keycloak），不在本站注册，也不在本手册范围。控制台「Docs」按钮打开本站（`https://docs.llm.soundadam.com`）。
 
-密码注册会发验证信（`soundadam <no-reply@soundadam.com>`）。
+## 30 秒上手
+
+<Steps>
+  <Step title="注册">
+    在 `https://llm.soundadam.com` 用密码或 GitHub 登录。新账户额度为 0。密码注册会收到验证信，发件人是 `soundadam <no-reply@soundadam.com>`。
+  </Step>
+  <Step title="充值">
+    付费入口：`https://soundadam.com/pricing/`。钱包按人民币（CNY）显示。
+  </Step>
+  <Step title="建令牌">
+    控制台「令牌」→「新建」。按用途选分组：`chat`（通用对话）、`codex`（Codex Pro 号池）、`image`（生图）。不要选 `lab`。令牌形如 `sk-xxxxxxxx`。
+  </Step>
+  <Step title="接客户端">
+    把主机和令牌填进客户端。协议决定要不要带 `/v1`（见上）。
+  </Step>
+</Steps>
+
+### 三条快速路径
+
+<CodeGroup>
+
+```bash Claude Code
+npm install -g @anthropic-ai/claude-code
+
+export ANTHROPIC_BASE_URL="https://llm.soundadam.com"
+export ANTHROPIC_AUTH_TOKEN="sk-你的令牌"      # 令牌分组：chat
+
+claude
+# 进入后执行 /model gpt-5.6-sol 切到本站模型
+```
+
+```bash Codex CLI
+npm install -g @openai/codex
+
+# ~/.codex/config.toml 见 Codex CLI 页；令牌分组：codex
+export SOUNDADAM_API_KEY="sk-你的令牌"
+
+codex
+```
+
+```bash curl 冒烟
+curl -sS https://llm.soundadam.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-5.4-mini","messages":[{"role":"user","content":"ping"}],"max_tokens":8}'
+```
+
+</CodeGroup>
 
 ## 令牌分组
 
-| 分组 | 用途 |
-| --- | --- |
-| default | 新账号所在组，可调 chat 模型 |
-| chat | 对话模型（GPT / Claude / Gemini 文本） |
-| codex | Codex CLI（`gpt-5.3-codex-spark`、`codex-auto-review`） |
-| image | 生图（`gpt-image-*`、Gemini image） |
-| lab | 运营把个别 GitHub 用户调成不扣费。公众不可选 |
+| 分组 | 用途 | 可外接 | 保证 |
+| --- | --- | --- | --- |
+| `default` | 新账号默认组，可调 `chat` 文本模型 | — | — |
+| `chat` | 通用对话：GPT / Gemini 文本模型 | 是 | — |
+| `codex` | **Codex Pro 号池**，全量 GPT-5.x + Codex 模型 | 是 | 假一赔十 |
+| `codex-cheap` | Codex 低价号池，对标官方价整体 0.45x | 是 | — |
+| `image` | 生图：`gpt-image-*`、Gemini image | 是 | — |
+| `lab` | 运营把个别 GitHub 用户调成不扣费。公众不可选 | — | — |
 
-操练场可以在站内试对话。站内 Chat、Midjourney 控制台、排行榜是关着的。
+模型清单与倍率见 [模型与计费](/models)。
+
+## 站内功能
+
+操练场（Playground）可以在站内试对话。站内 Chat、Midjourney 控制台、排行榜、生图控制台目前关闭——生图走 API，不走控制台。
 
 ## 协议
 
@@ -35,8 +85,4 @@ Base URL：`https://llm.soundadam.com`（调用时加 `/v1`）。
 - [用户协议](/legal/user-agreement)
 - [隐私政策与使用政策](/legal/privacy-policy)
 
-控制台里的同一份正文目前由 GitOps reconcile 写入
-https://llm.soundadam.com/user-agreement 与
-https://llm.soundadam.com/privacy-policy。
-
-价格与倍率以后再编排。当前没有公开用户时，控制台数字仅供参考。
+控制台内的同一份正文由 GitOps reconcile 写入 `https://llm.soundadam.com/user-agreement` 与 `https://llm.soundadam.com/privacy-policy`。
