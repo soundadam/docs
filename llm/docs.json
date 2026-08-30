@@ -10,10 +10,10 @@
   },
   "logo": {
     "light": "/logo/soundadam-waveform.svg",
-    "dark": "/logo/soundadam-waveform.svg",
+    "dark": "/logo/soundadam-waveform-dark.svg",
     "href": "https://llm.soundadam.com"
   },
-  "favicon": "/logo/soundadam-waveform.svg",
+  "favicon": "/logo/soundadam-mark.svg",
   "navbar": {
     "links": [
       {
