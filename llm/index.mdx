@@ -1,0 +1,42 @@
+---
+title: "soundadam C 端 API"
+description: "OpenAI-compatible API on llm.soundadam.com"
+---
+
+Base URL：`https://llm.soundadam.com`（调用时加 `/v1`）。
+
+这是对外的 NewAPI。WordPress（https://soundadam.com）是工作室站点与付费入口，不是这份手册。实验室密钥在 https://llm2.soundadam.com，不要把 C 端用户放进 Keycloak。
+
+## 开始
+
+1. 在 https://llm.soundadam.com 注册（密码或 GitHub）。新账户额度是 0。
+2. 付费入口：https://soundadam.com/pricing/。
+3. 创建令牌。分组选 `chat`、`codex` 或 `image`。不要选 `lab`。
+4. 客户端 `base_url` 填 `https://llm.soundadam.com/v1`，`api_key` 填该令牌。
+
+密码注册会发验证信（`soundadam <no-reply@soundadam.com>`）。
+
+## 令牌分组
+
+| 分组 | 用途 |
+| --- | --- |
+| default | 新账号所在组，可调 chat 模型 |
+| chat | 对话模型（GPT / Claude / Gemini 文本） |
+| codex | Codex CLI（`gpt-5.3-codex-spark`、`codex-auto-review`） |
+| image | 生图（`gpt-image-*`、Gemini image） |
+| lab | 运营把个别 GitHub 用户调成不扣费。公众不可选 |
+
+操练场可以在站内试对话。站内 Chat、Midjourney 控制台、排行榜是关着的。
+
+## 协议
+
+注册须同意：
+
+- [用户协议](/legal/user-agreement)
+- [隐私政策与使用政策](/legal/privacy-policy)
+
+控制台里的同一份正文目前由 GitOps reconcile 写入
+https://llm.soundadam.com/user-agreement 与
+https://llm.soundadam.com/privacy-policy。
+
+价格与倍率以后再编排。当前没有公开用户时，控制台数字仅供参考。

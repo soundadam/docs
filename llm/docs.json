@@ -1,0 +1,54 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "soundadam",
+  "description": "C-end API on llm.soundadam.com",
+  "colors": {
+    "primary": "#006fe8",
+    "light": "#1386ff",
+    "dark": "#006fe8"
+  },
+  "logo": {
+    "light": "/logo/soundadam-waveform.svg",
+    "dark": "/logo/soundadam-waveform.svg",
+    "href": "https://llm.soundadam.com"
+  },
+  "favicon": "/logo/soundadam-waveform.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "定价",
+        "href": "https://soundadam.com/pricing/"
+      },
+      {
+        "label": "工作室",
+        "href": "https://soundadam.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "控制台",
+      "href": "https://llm.soundadam.com"
+    }
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "C-end API",
+        "pages": ["index"]
+      },
+      {
+        "group": "协议",
+        "pages": [
+          "legal/user-agreement",
+          "legal/privacy-policy"
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/soundadam/docs"
+    }
+  }
+}
