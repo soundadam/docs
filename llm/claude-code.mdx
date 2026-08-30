@@ -44,7 +44,9 @@ npm install -g @anthropic-ai/claude-code
 
 ## 用 soundadam 令牌配置
 
-令牌分组选 `chat`（或新账号的 `default`）。两种写法：
+令牌分组：调 GPT / Codex 选 `codex`；调 Gemini（含 Gemini 生图）选 `gemini`。不要留在 `default`。下面示例用 `gpt-5.6-sol`，所以令牌要是 `codex` 组。
+
+两种写法：
 
 ### A. 环境变量
 
@@ -72,7 +74,7 @@ IDE 插件（VS Code / JetBrains）会用自己的设置覆盖 shell 环境变�
 
 ## 选模型
 
-本站 `chat` / `codex` 号池里没有 `claude-*` 模型名。Claude Code 默认会发 `claude-sonnet` / `claude-opus`，指向本站会「模型不存在」。**进入后执行 `/model` 切到本站模型**，例如：
+本站 `gemini` / `codex` 号池里没有 `claude-*` 模型名。Claude Code 默认会发 `claude-sonnet` / `claude-opus`，指向本站会「模型不存在」。**进入后执行 `/model` 切到本站模型**，例如：
 
 ```
 /model gpt-5.6-sol
@@ -87,7 +89,7 @@ export ANTHROPIC_SMALL_FAST_MODEL="gpt-5.4-mini"
 
 可用模型见 [模型与分组](/models)。`gpt-5.6-luna` 有全局限速，不建议当主力。
 
-要跑 Codex Pro 号池（`gpt-5.3-codex-spark` 等），令牌分组改用 `codex`——该号池**可外接、假一赔十**。这时 `/model` 也要指向 GPT 模型名，不要留在 `claude-*`。
+要跑 Codex Pro 号池（`gpt-5.3-codex-spark` 等），令牌本来就该是 `codex` 组——该号池**可外接、假一赔十**。`/model` 指向 GPT 模型名，不要留在 `claude-*`。Gemini 模型则换一把 `gemini` 组令牌。
 
 ## 常用命令
 
