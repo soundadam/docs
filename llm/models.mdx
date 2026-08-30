@@ -10,30 +10,30 @@ description: "令牌分组、模型清单与计费口径"
 ## 计费口径
 
 - 人民币结算，充值 1:1：`USDExchangeRate = 1`、`Price = 1`。充 ¥N 到账 ¥N 额度。
-- **模型单价**来自 NewAPI 官方倍率表（模型广场）。基准：模型倍率 `1` = ¥2 / 100 万输入 token。
-- **分组倍率**叠在模型单价上。`default` 是官方默认价；主力付费组 `chat` / `codex` / `image` 为 **0.5 倍**；`codex-cheap` 为 0.45 倍。
-- 输入扣费 = 输入 token × 模型倍率 × 分组倍率 × (¥2 / 1M)。输出再乘补全倍率。
+- **文本与 Gemini 生图**走 token：模型单价来自 NewAPI 官方倍率表（模型广场）。基准：模型倍率 `1` = ¥2 / 100 万输入 token。输入扣费 = 输入 token × 模型倍率 × 分组倍率 × (¥2 / 1M)。输出再乘补全倍率。
+- **GPT Image**（`image` 分组的 `gpt-image-1.5` / `gpt-image-2`）**按张**：固定 `ModelPrice` × 分组倍率，不按上下文长度。广场显示「按次」。
+- **分组倍率**叠在上面。`default` 是官方默认价（1）；主力付费组 `gemini` / `codex` / `image` 为 **0.5 倍**；`codex-cheap` 为 0.45 倍。
 
 ## 令牌分组
 
-按用途判断该选哪个。`lab` 公众不可选。
+按号池判断该选哪个。`lab` 公众不可选。没有公开的 `chat` 分组。
 
-### 默认
-
-| 分组 | 说明 | 可用模型 | `model` 填写建议 |
-| --- | --- | --- | --- |
-| `default` | 新账号所在组，官方默认价，可调 chat 文本模型。单价高于 0.5 档，不建议当主力 | GPT / Gemini 文本 | 建令牌时改到 `chat` |
-
-### 对话 / Codex / 生图
+### 默认 / Gemini
 
 | 分组 | 说明 | 可用模型 | `model` 填写建议 |
 | --- | --- | --- | --- |
-| `chat` | 通用对话，可外接，分组倍率 0.5 | GPT 文本、Gemini 文本、`gpt-oss-120b-medium` | 按模型广场 ID |
-| `codex` | Codex Pro 号池，可外接，假一赔十，分组倍率 0.5 | `gpt-5.6-sol` `gpt-5.6-terra` `gpt-5.6-luna` `gpt-5.5` `gpt-5.4` `gpt-5.4-mini` `gpt-5.3-codex-spark` `codex-auto-review` | 推荐 `gpt-5.6-sol` |
+| `default` | 新账号所在组，官方默认价。效果同 `gemini`，单价更高。不建议当主力 | Gemini 文本与 `gemini-3.1-flash-image` | 建令牌时改到 `gemini` |
+| `gemini` | Gemini 号池，可外接，分组倍率 0.5 | Gemini 3.x 文本、`gemini-3.1-flash-image` | 按模型广场中的 Gemini ID |
+
+### Codex / GPT Image
+
+| 分组 | 说明 | 可用模型 | `model` 填写建议 |
+| --- | --- | --- | --- |
+| `codex` | Codex Pro / GPT 号池，可外接，假一赔十，分组倍率 0.5 | `gpt-5.6-sol` `gpt-5.6-terra` `gpt-5.6-luna` `gpt-5.5` `gpt-5.4` `gpt-5.4-mini` `gpt-5.3-codex-spark` `codex-auto-review` `gpt-oss-120b-medium` | 推荐 `gpt-5.6-sol` |
 | `codex-cheap` | Codex 低价子集，可外接，无假一赔十，分组倍率 0.45 | `gpt-5.6-sol` `gpt-5.6-terra` `gpt-5.6-luna` `gpt-5.5` | 推荐 `gpt-5.6-sol` |
-| `image` | 生图，可外接，分组倍率 0.5 | `gpt-image-1.5` `gpt-image-2` `gemini-3.1-flash-image` | 按图像模型 ID |
+| `image` | GPT Image 专用，按张计费，可外接，分组倍率 0.5 | `gpt-image-2` `gpt-image-1.5` | 按图像模型 ID |
 
-`gpt-5.6-luna` 有全局限速，主要用于后台审查，不建议当主力日用模型。
+`gpt-5.6-luna` 有全局限速，主要用于后台审查，不建议当主力日用模型。Gemini 生图走 `gemini`，不要配 `image` 组。
 
 本站 C 端没有 Claude：antigravity 上游不可用。实验室 Claude 在 `https://llm2.soundadam.com`。
 
