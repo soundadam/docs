@@ -8,8 +8,8 @@ intended Git source for Mintlify. Do not point Mintlify at
 | --- | --- | --- |
 | [`llm/`](llm/) | C-end API (NewAPI) | `https://llm.soundadam.com` |
 
-WordPress (`https://soundadam.com`) stays the studio site and
-`/pricing/` CTA. Lab keys stay on `https://llm2.soundadam.com` and are
+WordPress (`https://soundadam.com`) stays the studio site.
+`/pricing/` is unpublished. Lab keys stay on `https://llm2.soundadam.com` and are
 not documented here.
 
 ## Mintlify

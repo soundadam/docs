@@ -17,10 +17,6 @@
   "navbar": {
     "links": [
       {
-        "label": "定价",
-        "href": "https://soundadam.com/pricing/"
-      },
-      {
         "label": "工作室",
         "href": "https://soundadam.com"
       }
