@@ -9,7 +9,7 @@ intended Git source for Mintlify. Do not point Mintlify at
 | [`llm/`](llm/) | C-end API (NewAPI) | `https://llm.soundadam.com` |
 
 WordPress (`https://soundadam.com`) stays the studio site.
-`/pricing/` is unpublished. Lab keys stay on `https://llm2.soundadam.com` and are
+`/pricing/` is unpublished. Lab keys live on `https://llm2.my.soundadam.com` and are
 not documented here.
 
 ## Mintlify
